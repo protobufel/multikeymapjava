@@ -1,4 +1,4 @@
-[![Travis](https://img.shields.io/travis/multikeymapjava/rust.svg?style=plastic)](https://github.com/protobufel/multikeymapjava)
+[![Travis](https://img.shields.io/travis/protobufel/multikeymapjava.svg?style=plastic)](https://travis-ci.org/protobufel/multikeymapjava)
 
 # MultiKeyMap Java Implementation #
 
