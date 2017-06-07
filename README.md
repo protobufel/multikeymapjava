@@ -1,3 +1,5 @@
+[![Travis](https://img.shields.io/travis/multikeymapjava/rust.svg?style=plastic)](https://github.com/protobufel/multikeymapjava)
+
 # MultiKeyMap Java Implementation #
 
 Java 8 implementation of the multi-key map.  It behaves like a regular generic Map with the additional ability of getting its values 
