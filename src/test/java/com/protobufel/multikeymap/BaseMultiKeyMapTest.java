@@ -14,15 +14,11 @@
 
 package com.protobufel.multikeymap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.Before;
@@ -49,13 +45,13 @@ public class BaseMultiKeyMapTest {
   @Test
   public void testGetFullKeysByPartialKey() {
 
-    MultiKeyMap<String, Iterable<String>, String> map = MultiKeyMaps.newMultiKeyMap();
+    final MultiKeyMap<String, Iterable<String>, String> map = MultiKeyMaps.newMultiKeyMap();
 
     // add a record
     map.put(Arrays.asList("Hello", ",", "wonderful", "world"), "You found me!");
 
     // or copy some data from the compatible Map
-    Map<Iterable<String>, String> dict = new HashMap<>();
+    final Map<Iterable<String>, String> dict = new HashMap<>();
     dict.put(Arrays.asList("okay", "I", "am", "here"), "or there!");
     dict.put(Arrays.asList("okay", "I", "am", "not", "here"), "for sure!");
 
@@ -64,7 +60,7 @@ public class BaseMultiKeyMapTest {
 
     // MultiKeyMap interface extends Map, and also adds get{FullKeys|Values|Entries}ByPartialKey
     // methods of its own
-    String exactMatch = map.get(Arrays.asList("okay", "I", "am", "here"));
+    final String exactMatch = map.get(Arrays.asList("okay", "I", "am", "here"));
 
     if (exactMatch != null) {
       System.out.println(String.format(

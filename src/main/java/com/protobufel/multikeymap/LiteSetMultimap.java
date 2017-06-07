@@ -1,16 +1,16 @@
-//   Copyright 2017 David Tesler
+// Copyright 2017 David Tesler
 //
-//   Licensed under the Apache License, Version 2.0 (the "License");
-//   you may not use this file except in compliance with the License.
-//   You may obtain a copy of the License at
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
-//   Unless required by applicable law or agreed to in writing, software
-//   distributed under the License is distributed on an "AS IS" BASIS,
-//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//   See the License for the specific language governing permissions and
-//   limitations under the License.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package com.protobufel.multikeymap;
 
@@ -57,7 +57,8 @@ public interface LiteSetMultimap<K, V> {
 
       @Override
       public boolean put(final K key, final V value) {
-        return map.computeIfAbsent(Objects.requireNonNull(key), k -> new HashSet<>()).add(Objects.requireNonNull(value));
+        return map.computeIfAbsent(Objects.requireNonNull(key), k -> new HashSet<>())
+            .add(Objects.requireNonNull(value));
       }
 
       @Override
@@ -78,12 +79,11 @@ public interface LiteSetMultimap<K, V> {
       @Override
       public boolean remove(final K key, final V value) {
         final boolean[] removed = {false};
-        map.computeIfPresent(Objects.requireNonNull(key), (k, v) -> 
-        {
+        map.computeIfPresent(Objects.requireNonNull(key), (k, v) -> {
           if ((removed[0] = v.remove(value)) && v.isEmpty()) {
             return null;
           }
-          
+
           return v;
         });
 
