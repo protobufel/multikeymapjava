@@ -55,7 +55,6 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
   default Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
-
     final Optional<Stream<K>> keyStream = getFullKeysByPartialKey(
         StreamSupport.stream(Objects.requireNonNull(partialKey).spliterator(), true)
             .collect(Collectors.toSet()));
@@ -90,7 +89,7 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
         this.totalCount = totalCount;
       }
 
-      boolean matchesPartially(final K fullKey) {
+      boolean matches(final K fullKey) {
         Objects.requireNonNull(fullKey);
         final Map<T, Integer> counters = new HashMap<>(this.counters);
         int totalCount = this.totalCount;
@@ -131,7 +130,7 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
     return keyStream.map(fullKeys -> {
       final IterableMatcher matcher = new IterableMatcher();
-      return fullKeys.filter(key -> matcher.matchesPartially(key));
+      return fullKeys.filter(key -> matcher.matches(key));
     });
   }
 }

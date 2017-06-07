@@ -27,8 +27,9 @@ import java.util.stream.StreamSupport;
 final class Matchers {
   private Matchers() {}
 
-  public static <T> boolean matchesPartially(final Iterable<? extends Iterable<? extends T>> source,
-      final Iterable<? extends T> search, final Iterable<Integer> positions) {
+  public static <T> boolean matchesByPositions(
+      final Iterable<? extends Iterable<? extends T>> source, final Iterable<? extends T> search,
+      final Iterable<Integer> positions) {
     Objects.requireNonNull(source);
 
     final IterablePositionMatcher<T> matcher = new IterablePositionMatcher<>(
@@ -43,8 +44,9 @@ final class Matchers {
     return true;
   }
 
-  public static <T> boolean matchesPartially(final Iterable<? extends Iterable<? extends T>> source,
-      final Iterable<? extends T> search, final Pattern pattern) {
+  public static <T> boolean matchesByPositionalPattern(
+      final Iterable<? extends Iterable<? extends T>> source, final Iterable<? extends T> search,
+      final Pattern pattern) {
     Objects.requireNonNull(source);
 
     final IterablePatternMatcher<T> matcher = new IterablePatternMatcher<>(
