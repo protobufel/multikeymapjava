@@ -25,5 +25,8 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
+    testImplementation 'org.assertj:assertj-core:3.8.0'
+    testImplementation 'com.google.guava:guava:22.0'
+    testImplementation 'com.google.guava:guava-testlib:22.0'
 }
 
