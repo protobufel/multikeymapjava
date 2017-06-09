@@ -14,10 +14,14 @@
 
 package com.protobufel.multikeymap;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.minBy;
+
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,6 +33,7 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V> {
   private Map<K, V> fullMap;
@@ -93,6 +98,31 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
     return Optional.of(result.stream());
   }
+
+  public Optional<Stream<K>> getFullKeysByPartialKeyNew(final Iterable<? extends T> partialKey) {
+    Objects.requireNonNull(partialKey);
+
+    if (partMap.isEmpty()) {
+      return Optional.empty();
+    }
+
+    StreamSupport.stream(partialKey.spliterator(), true)
+        .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).filter(set -> !set.isEmpty())
+        .reduce((set1, set2) -> {
+          set1.retainAll(set2);
+          return set1;
+        });
+
+    
+    
+    StreamSupport.stream(partialKey.spliterator(), true).unordered()
+    .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).filter(set -> !set.isEmpty())
+    .collect(
+        collectingAndThen(HashSet::new, (left, right) -> left.retainAll(right), (left, right) -> left.retainAll(right)), 
+        
+        
+  }
+
 
   @Override
   public int size() {
