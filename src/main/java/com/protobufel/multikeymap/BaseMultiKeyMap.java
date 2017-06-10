@@ -14,18 +14,15 @@
 
 package com.protobufel.multikeymap;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.minBy;
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,12 +33,22 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V> {
+  static boolean enableParallelStreaming = false;
+
+  static final boolean isEnableParallelStreaming() {
+    return enableParallelStreaming;
+  }
+
+  static final void setEnableParallelStreaming(final boolean enableParallelStreaming) {
+    BaseMultiKeyMap.enableParallelStreaming = enableParallelStreaming;
+  }
+
   private Map<K, V> fullMap;
   private transient LiteSetMultimap<T, K> partMap;
 
-  transient Set<K> keySet;
-  transient Collection<V> values;
-  transient Set<Entry<K, V>> entrySet;
+  private transient Set<K> keySet;
+  private transient Collection<V> values;
+  private transient Set<Entry<K, V>> entrySet;
 
   BaseMultiKeyMap(final Map<K, V> fullMap, final LiteSetMultimap<T, K> partMap) {
     super();
@@ -53,6 +60,54 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
     this(new HashMap<>(), LiteSetMultimap.newInstance());
   }
 
+  // TODO remove or re-enable after comparing the performance comparison w/ the Java 8 based
+  // implementation
+  // @Override
+  // public Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {
+  // Objects.requireNonNull(partialKey);
+  //
+  // if (partMap.isEmpty()) {
+  // return Optional.empty();
+  // }
+  //
+  // final List<Set<K>> subResults = new ArrayList<>();
+  // int minSize = Integer.MAX_VALUE;
+  // int minPos = -1;
+  //
+  // for (final T subKey : partialKey) {
+  // final Set<K> subResult = partMap.get(Objects.requireNonNull(subKey));
+  //
+  // if (subResult.size() == 0) {
+  // return Optional.empty();
+  // } else if (subResult.size() < minSize) {
+  // minSize = subResult.size();
+  // minPos = subResults.size();
+  // }
+  //
+  // subResults.add(subResult);
+  // }
+  //
+  // if (subResults.isEmpty()) {
+  // return Optional.empty();
+  // }
+  //
+  // final Set<K> result = new HashSet<>(subResults.get(minPos));
+  //
+  // if (subResults.size() == 1) {
+  // return Optional.of(result.stream());
+  // }
+  //
+  // for (int i = 0; i < subResults.size(); i++) {
+  // if (i != minPos) {
+  // if (result.retainAll(subResults.get(i)) && result.isEmpty()) {
+  // return Optional.empty();
+  // }
+  // }
+  // }
+  //
+  // return Optional.of(result.stream());
+  // }
+
   @Override
   public Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {
     Objects.requireNonNull(partialKey);
@@ -61,68 +116,34 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
       return Optional.empty();
     }
 
-    final List<Set<K>> subResults = new ArrayList<>();
-    int minSize = Integer.MAX_VALUE;
-    int minPos = -1;
-
-    for (final T subKey : partialKey) {
-      final Set<K> subResult = partMap.get(Objects.requireNonNull(subKey));
-
-      if (subResult.size() == 0) {
-        return Optional.empty();
-      } else if (subResult.size() < minSize) {
-        minSize = subResult.size();
-        minPos = subResults.size();
-      }
-
-      subResults.add(subResult);
+    if (!(partialKey instanceof Set)) {
+      return getFullKeysByPartialKey(partialKey, Collections.emptyList());
     }
+    
+    final Set<Set<K>> sets = ((Set<? extends T>)partialKey).stream().unordered()
+        .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).collect(toSet());
+    final Optional<Set<K>> smallestSet =
+        sets.stream().unordered().min(comparingInt(set -> set.size()));
 
-    if (subResults.isEmpty()) {
+    if (!smallestSet.isPresent()) {
       return Optional.empty();
     }
 
-    final Set<K> result = new HashSet<>(subResults.get(minPos));
+    sets.remove(smallestSet.get());
 
-    if (subResults.size() == 1) {
-      return Optional.of(result.stream());
+    // TODO requires performance review, for small samples the sequential implementation is better
+    final Set<K> result;
+
+    if (isEnableParallelStreaming()) {
+      result = sets.parallelStream().unordered()
+          .collect(Collectors.setIntersecting(smallestSet.get(), true));
+    } else {
+      result =
+          sets.stream().unordered().collect(Collectors.setIntersecting(smallestSet.get(), false));
     }
 
-    for (int i = 0; i < subResults.size(); i++) {
-      if (i != minPos) {
-        if (result.retainAll(subResults.get(i)) && result.isEmpty()) {
-          return Optional.empty();
-        }
-      }
-    }
-
-    return Optional.of(result.stream());
+    return result.isEmpty() ? Optional.empty() : Optional.of(result.stream());
   }
-
-  public Optional<Stream<K>> getFullKeysByPartialKeyNew(final Iterable<? extends T> partialKey) {
-    Objects.requireNonNull(partialKey);
-
-    if (partMap.isEmpty()) {
-      return Optional.empty();
-    }
-
-    StreamSupport.stream(partialKey.spliterator(), true)
-        .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).filter(set -> !set.isEmpty())
-        .reduce((set1, set2) -> {
-          set1.retainAll(set2);
-          return set1;
-        });
-
-    
-    
-    StreamSupport.stream(partialKey.spliterator(), true).unordered()
-    .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).filter(set -> !set.isEmpty())
-    .collect(
-        collectingAndThen(HashSet::new, (left, right) -> left.retainAll(right), (left, right) -> left.retainAll(right)), 
-        
-        
-  }
-
 
   @Override
   public int size() {
