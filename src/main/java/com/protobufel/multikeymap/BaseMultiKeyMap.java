@@ -14,7 +14,6 @@
 
 package com.protobufel.multikeymap;
 
-import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.AbstractCollection;
@@ -30,7 +29,6 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V> {
   static boolean enableParallelStreaming = false;
@@ -119,30 +117,10 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
     if (!(partialKey instanceof Set)) {
       return getFullKeysByPartialKey(partialKey, Collections.emptyList());
     }
-    
-    final Set<Set<K>> sets = ((Set<? extends T>)partialKey).stream().unordered()
+
+    final Set<Set<K>> sets = ((Set<? extends T>) partialKey).stream().unordered()
         .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).collect(toSet());
-    final Optional<Set<K>> smallestSet =
-        sets.stream().unordered().min(comparingInt(set -> set.size()));
-
-    if (!smallestSet.isPresent()) {
-      return Optional.empty();
-    }
-
-    sets.remove(smallestSet.get());
-
-    // TODO requires performance review, for small samples the sequential implementation is better
-    final Set<K> result;
-
-    if (isEnableParallelStreaming()) {
-      result = sets.parallelStream().unordered()
-          .collect(Collectors.setIntersecting(smallestSet.get(), true));
-    } else {
-      result =
-          sets.stream().unordered().collect(Collectors.setIntersecting(smallestSet.get(), false));
-    }
-
-    return result.isEmpty() ? Optional.empty() : Optional.of(result.stream());
+    return Collectors.intersectSets(sets, isEnableParallelStreaming()).map(set -> set.stream());
   }
 
   @Override

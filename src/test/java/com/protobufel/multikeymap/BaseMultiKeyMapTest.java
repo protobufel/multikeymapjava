@@ -14,8 +14,8 @@
 
 package com.protobufel.multikeymap;
 
-//import static org.junit.Assert.fail;
-import static org.assertj.core.api.Assertions.*;
+// import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;

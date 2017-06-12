@@ -14,11 +14,6 @@
 
 package com.protobufel.multikeymap;
 
-//import static org.junit.Assert.fail;
-import static org.assertj.core.api.Assertions.*;
-
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.After;
@@ -37,11 +32,11 @@ public class MultiKeyMapAsMapWithGuavaTest {
 
   @Test
   public void testMultiMapForwardingToMap() {
-    MultiKeyMap<String, Iterable<String>, Integer> multimap = MultiKeyMaps.newMultiKeyMap();
-    new ForwardingWrapperTester().includingEquals().testForwarding(Map.class, 
-        map ->  MultiKeyMaps.<String, Iterable<String>, Integer>newMultiKeyMap(map, 
+    MultiKeyMaps.newMultiKeyMap();
+    new ForwardingWrapperTester().includingEquals().testForwarding(Map.class,
+        map -> MultiKeyMaps.<String, Iterable<String>, Integer>newMultiKeyMap(map,
             LiteSetMultimap.<String, Iterable<String>>newInstance()));
-    
-    
+
+
   }
 }

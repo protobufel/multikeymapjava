@@ -14,10 +14,13 @@
 
 package com.protobufel.multikeymap;
 
+import static java.util.Comparator.comparingInt;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentHashMap.KeySetView;
@@ -26,9 +29,18 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.StreamSupport;
 
 final class Collectors {
   private Collectors() {}
+
+  public static <K> Optional<Set<K>> intersectSets(final Iterable<? extends Set<K>> source,
+      final boolean parallel) {
+    return StreamSupport.stream(Objects.requireNonNull(source).spliterator(), parallel).unordered()
+        .min(comparingInt(set -> Objects.requireNonNull(set).size()))
+        .map(smallestSet -> StreamSupport.stream(source.spliterator(), parallel).unordered()
+            .collect(setIntersecting(smallestSet, parallel)));
+  }
 
   public static <K> Collector<Set<K>, Set<K>, Set<K>> setIntersecting(final Set<K> smallestSet,
       final boolean parallel) {
@@ -62,7 +74,7 @@ final class Collectors {
     @Override
     public BiConsumer<Set<K>, Set<K>> accumulator() {
       return (set1, set2) -> {
-        if (!set1.isEmpty() && !set2.isEmpty()) {
+        if ((set2 != smallestSetSupplier.get()) && !set1.isEmpty() && !set2.isEmpty()) {
           set1.retainAll(set2);
         }
       };
@@ -101,7 +113,7 @@ final class Collectors {
     @Override
     public BiConsumer<Set<K>, Set<K>> accumulator() {
       return (set1, set2) -> {
-        if (!set1.isEmpty() && !set2.isEmpty()) {
+        if ((set2 != smallestSetSupplier.get()) && !set1.isEmpty() && !set2.isEmpty()) {
           set1.retainAll(set2);
         }
       };
