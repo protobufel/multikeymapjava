@@ -95,6 +95,8 @@ public final class MultiKeyMapGenerators {
     }
 
     protected Map<K, V> create(@SuppressWarnings("unchecked") final Entry<K, V>... entries) {
+      multiKeyMap.clear();
+      
       for (final Entry<K, V> entry : Objects.requireNonNull(entries)) {
         multiKeyMap.put(Objects.requireNonNull(entry).getKey(), entry.getValue());
       }
@@ -170,6 +172,13 @@ public final class MultiKeyMapGenerators {
       public String get() {
         return source.get(++current < source.size() ? current : (current = 0));
       }
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterable<String>[] createKeyArray(int length) {
+      return (Iterable<String>[])new Iterable[length];
     }
   }
 }

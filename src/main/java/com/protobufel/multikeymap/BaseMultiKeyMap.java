@@ -107,6 +107,11 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
   // }
 
   @Override
+  public String toString() {
+    return fullMap.toString();
+  }
+
+  @Override
   public Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {
     Objects.requireNonNull(partialKey);
 
@@ -150,7 +155,9 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
   @Override
   public V put(final K key, final V value) {
+    Objects.requireNonNull(value);
     final Object[] oldValue = {null};
+    
     fullMap.compute(key, (k, v) -> {
       if (v == null) {
         putPartial(k);

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.AllTests;
 
 import com.google.common.collect.testing.MapTestSuiteBuilder;
+import com.google.common.collect.testing.features.CollectionFeature;
 import com.google.common.collect.testing.features.CollectionSize;
 import com.google.common.collect.testing.features.MapFeature;
 
@@ -33,12 +34,15 @@ public class GuavaMultiKeyMapTests extends TestCase {
         .using(new MultiKeyMapGenerators.StringMultiKeyMapTestGenerator())
         .named("MultiKeyMap of string keys and values").withFeatures(CollectionSize.ANY,
             // CollectionFeature.ALLOWS_NULL_VALUES,
-            // CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
+            CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
             // CollectionFeature.SUPPORTS_ADD,
-            // CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
+            CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
             // CollectionFeature.SUPPORTS_REMOVE,
             // CollectionFeature.GENERAL_PURPOSE
-            MapFeature.GENERAL_PURPOSE, MapFeature.RESTRICTS_KEYS, MapFeature.ALLOWS_NULL_VALUES)
+            MapFeature.GENERAL_PURPOSE, 
+            MapFeature.RESTRICTS_KEYS,
+            MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION
+            )
         .createTestSuite();
     return suite;
   }
