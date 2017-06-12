@@ -136,4 +136,27 @@ final class Collectors {
       return Function.identity();
     }
   }
+
+  public static <T, E, K extends Iterable<E>, U> Collector<T, ?, MultiKeyMap<E, K, U>> toMultiKeyMap(
+      final Function<? super T, ? extends K> keyMapper,
+      final Function<? super T, ? extends U> valueMapper) {
+    return java.util.stream.Collectors.toMap(keyMapper, valueMapper, (k, v) -> {
+      throw new IllegalStateException(String.format("duplicate key %s", k));
+    }, MultiKeyMaps::<E, K, U>newMultiKeyMap);
+  }
+
+  public static <T, E, K extends Iterable<E>, U> Collector<T, ?, MultiKeyMap<E, K, U>> toMultiKeyMap(
+      final Function<? super T, ? extends K> keyMapper,
+      final Function<? super T, ? extends U> valueMapper, final BinaryOperator<U> mergeFunction) {
+    return java.util.stream.Collectors.toMap(keyMapper, valueMapper, mergeFunction,
+        MultiKeyMaps::<E, K, U>newMultiKeyMap);
+  }
+
+  public static <T, E, K extends Iterable<E>, U, M extends MultiKeyMap<E, K, U>> Collector<T, ?, M> toMultiKeyMap(
+      final Function<? super T, ? extends K> keyMapper,
+      final Function<? super T, ? extends U> valueMapper, final BinaryOperator<U> mergeFunction,
+      final Supplier<M> multiKeyMapSupplier) {
+    return java.util.stream.Collectors.toMap(keyMapper, valueMapper, mergeFunction,
+        multiKeyMapSupplier);
+  }
 }

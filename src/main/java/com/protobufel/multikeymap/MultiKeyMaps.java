@@ -21,27 +21,26 @@ import java.util.function.Supplier;
 public final class MultiKeyMaps {
   private MultiKeyMaps() {}
 
-  public static <T extends Comparable<T>, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
+  public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
       final Supplier<Map<K, V>> mapSupplier,
       final Supplier<LiteSetMultimap<T, K>> multimapSupplier) {
     return new BaseMultiKeyMap<>(mapSupplier.get(), multimapSupplier.get());
   }
 
-  public static <T extends Comparable<T>, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
+  public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
       final Map<K, V> map, final LiteSetMultimap<T, K> setMultimap) {
     return new BaseMultiKeyMap<>(map, setMultimap);
   }
 
-  public static <T extends Comparable<T>, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap() {
+  public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap() {
     return new BaseMultiKeyMap<>();
   }
 
-  public static <T extends Comparable<T>, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newHashMultiKeyMap() {
+  public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newHashMultiKeyMap() {
     return new BaseMultiKeyMap<>(new HashMap<K, V>(), LiteSetMultimap.newInstance());
   }
 
-  public static <T extends Comparable<T>, K extends Iterable<T>, V> MultiKeyMap<T, K, V> of(
-      final Map<K, V> map) {
+  public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> of(final Map<K, V> map) {
     return new BaseMultiKeyMap<>(new HashMap<>(map), LiteSetMultimap.newInstance());
   }
 }
