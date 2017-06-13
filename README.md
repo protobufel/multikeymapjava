@@ -34,13 +34,13 @@ any-position-sub-keys and positional sub-keys, as in the following example:
     // lets look by partial key anywhere within the full key (any sequence in any order of some
     // sub-keys of the original full key we're looking for)
     // should be 1 record with value = 'for sure!'. Let's see the actual one:
-    map.getValuesByPartialKey(Arrays.asList("not", "I")).ifPresent(System.out::println);
+    map.getValuesByPartialKey(Arrays.asList("not", "I")).forEach(System.out::println);
 
     // lets look by partial key, wherein some sub-keys are looked at the particular 0-based
     // positions ( >= 0), and others anywhere ( < 0)
     // should be 1 record with value = 'or there!'. Let's see the actual one:
     map.getValuesByPartialKey(Arrays.asList("here", "I", "am"), Arrays.asList(3, -1, -1))
-        .ifPresent(System.out::println);
+        .forEach(System.out::println);
 
     map.clear();
     // Happy using!
