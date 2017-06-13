@@ -56,7 +56,7 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
             .collect(Collectors.toSet()));
 
     class IterableMatcher {
-      final Map<Integer, Set<T>> symbols;
+      final Map<Integer, T> symbols;
       final Map<T, Integer> counters;
       final int totalCount;
 
@@ -66,20 +66,24 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
         final Iterator<Integer> it = positions.iterator();
         boolean morePositions = true;
-        final int[] totalCount = {0};
+        int totalCount = 0;
 
         for (final T el : partialKey) {
           final int position;
 
           if (morePositions && (morePositions = it.hasNext()) && ((position = it.next()) >= 0)) {
-            symbols.computeIfAbsent(position, k -> {totalCount[0] += 1; return new HashSet<>();}).add(el);
+            if (symbols.put(position, el) != null) {
+              throw new IllegalArgumentException(String.format("duplicate positive position %s", position));
+            } else {
+              totalCount++;
+            }
           } else {
-            totalCount[0] += 1;
+            totalCount++;
             counters.merge(el, 1, (oldValue, value) -> oldValue + 1);
           }
         }
 
-        this.totalCount = totalCount[0];
+        this.totalCount = totalCount;
       }
 
       boolean matches(final K fullKey) {
@@ -92,9 +96,9 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
         for (final T el : fullKey) {
           i++;
 
-          final Set<T> fixedPositionSet = symbols.get(i);
+          final T fixedPositionSubKey = symbols.get(i);
 
-          if (fixedPositionSet == null) {
+          if (fixedPositionSubKey == null) {
             final boolean[] found = {false};
             counters.computeIfPresent(el, (subKey, count) -> {
               found[0] = true;
@@ -104,7 +108,7 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
             if (found[0] && (--totalCount == 0)) {
               return true;
             }
-          } else if (fixedPositionSet.contains(el)) {
+          } else if (fixedPositionSubKey.equals(el)) {
             if (--totalCount == 0) {
               return true;
             }

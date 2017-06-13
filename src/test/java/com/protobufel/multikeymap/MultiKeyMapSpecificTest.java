@@ -1,7 +1,5 @@
 package com.protobufel.multikeymap;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -114,7 +112,8 @@ public class MultiKeyMapSpecificTest {
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY2, firstThirdPositivePositions))
         .isNotEmpty().containsOnly(KEY3);
 
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions)).isEmpty();
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions))
+        .isEmpty();
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("two", "three", "one"),
         firstNegativeSecondPositions)).isNotEmpty().containsOnly(KEY3);
@@ -125,19 +124,9 @@ public class MultiKeyMapSpecificTest {
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, wrongFirstNegativePositions))
         .isEmpty();
 
-    softly.assertThat(
-        multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("one", "two", "two", "one", "three"),
-            overlapedFirstSecondNegativePositions))
-        .isNotEmpty().containsOnly(KEY1, KEY3);
-
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(
+    softly.assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(
         ImmutableList.of("one", "two", "two", "one", "one"), overlapedFirstSecondNegativePositions))
-        .isNotEmpty().containsOnly(KEY3);
-
-    softly
-        .assertThat(multiKeyMap.getFullKeysByPartialKey(
-            ImmutableList.of("one", "two", "two", "three"), overlapedFirstSecondNegativePositions))
-        .isNotEmpty().containsOnly(KEY1, KEY2);
+        .isInstanceOf(IllegalArgumentException.class);
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, manyPositivePositions)).isNotEmpty()
         .containsOnly(KEY1);
