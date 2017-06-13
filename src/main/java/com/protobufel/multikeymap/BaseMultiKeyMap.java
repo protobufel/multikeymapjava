@@ -14,8 +14,7 @@
 
 package com.protobufel.multikeymap;
 
-import static java.util.stream.Collectors.toSet;
-import static com.protobufel.multikeymap.Collectors.*;
+import static com.protobufel.multikeymap.Collectors.intersectSets;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -27,11 +26,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V> {
@@ -116,11 +113,11 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
   }
 
   @Override
-  public Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {
+  public Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {
     Objects.requireNonNull(partialKey);
 
     if (partMap.isEmpty()) {
-      return Optional.empty();
+      return Stream.empty();
     }
 
     if (!(partialKey instanceof Set)) {
@@ -134,21 +131,22 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
     final List<Set<K>> sets = new ArrayList<>();
 
-    for (T subKey : partialKey) {
-      Set<K> set = partMap.get(Objects.requireNonNull(subKey));
+    for (final T subKey : partialKey) {
+      final Set<K> set = partMap.get(Objects.requireNonNull(subKey));
 
       if (set == null) {
-        return Optional.empty();
+        return Stream.empty();
       }
 
       sets.add(set);
     }
-    
+
     if (sets.isEmpty()) {
-      return Optional.empty();
+      return Stream.empty();
     }
 
-    return intersectSets(sets, isEnableParallelStreaming()).map(set -> set.stream());
+    return intersectSets(sets, isEnableParallelStreaming()).map(set -> set.stream())
+        .orElse(Stream.empty());
   }
 
   @Override
@@ -214,7 +212,7 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
   @Override
   public void putAll(final Map<? extends K, ? extends V> m) {
-    for (final Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
+    for (final Map.Entry<? extends K, ? extends V> entry : Objects.requireNonNull(m).entrySet()) {
       put(entry.getKey(), entry.getValue());
     }
   }

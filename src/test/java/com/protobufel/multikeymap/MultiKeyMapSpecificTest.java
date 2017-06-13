@@ -76,30 +76,25 @@ public class MultiKeyMapSpecificTest {
 
   @Test
   public void testGetFullKeysByPartialKeyNoPositions() {
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(emptyPartialKey)).isNotPresent();
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(absentPartialKey)).isNotPresent();
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(emptyPartialKey)).isEmpty();
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(absentPartialKey)).isEmpty();
     softly.assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(withNullsPartialKey))
         .isInstanceOf(NullPointerException.class);
     softly.assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(nullPartialKey))
         .isInstanceOf(NullPointerException.class);
 
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey)).isPresent()
-        .hasValueSatisfying(stream -> {
-          softly.assertThat(stream).hasSameSizeAs(multiKeyMap.keySet())
-              .containsOnlyElementsOf(multiKeyMap.keySet());
-        });
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1)).isPresent()
-        .hasValueSatisfying(stream -> {
-          softly.assertThat(stream).hasSize(2).containsOnly(KEY1, KEY3);
-        });
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey)).isNotEmpty()
+        .hasSameSizeAs(multiKeyMap.keySet()).containsOnlyElementsOf(multiKeyMap.keySet());
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1)).isNotEmpty().hasSize(2)
+        .containsOnly(KEY1, KEY3);
   }
 
   @Test
   public void testGetFullKeysByPartialKeyWithPositions() {
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(emptyPartialKey, manyNegativePositions))
-        .isNotPresent();
+        .isEmpty();
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(absentPartialKey, oneNegativePosition))
-        .isNotPresent();
+        .isEmpty();
     softly
         .assertThatThrownBy(
             () -> multiKeyMap.getFullKeysByPartialKey(withNullsPartialKey, oneNegativePosition))
@@ -110,61 +105,41 @@ public class MultiKeyMapSpecificTest {
         .isInstanceOf(NullPointerException.class);
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey, oneNegativePosition))
-        .isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).hasSameSizeAs(multiKeyMap.keySet())
-              .containsOnlyElementsOf(multiKeyMap.keySet());
-        });
+        .isNotEmpty().hasSameSizeAs(multiKeyMap.keySet())
+        .containsOnlyElementsOf(multiKeyMap.keySet());
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey, firstPositivePosition))
-        .isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY2, KEY3);
-        });
+        .isNotEmpty().containsOnly(KEY2, KEY3);
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY2, firstThirdPositivePositions))
-        .isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY3);
-        });
+        .isNotEmpty().containsOnly(KEY3);
 
-    //softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions))
-    assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions))
-        .isNotPresent();
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions)).isEmpty();
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("two", "three", "one"),
-        firstNegativeSecondPositions)).isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY3);
-        });
+        firstNegativeSecondPositions)).isNotEmpty().containsOnly(KEY3);
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("one", "one", "two"),
-        negativeSecondFirstPositions)).isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY3);
-        });
+        negativeSecondFirstPositions)).isNotEmpty().containsOnly(KEY3);
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, wrongFirstNegativePositions))
-        .isNotPresent();
+        .isEmpty();
 
     softly.assertThat(
         multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("one", "two", "two", "one", "three"),
             overlapedFirstSecondNegativePositions))
-        .isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY1, KEY3);
-        });
+        .isNotEmpty().containsOnly(KEY1, KEY3);
 
     softly.assertThat(multiKeyMap.getFullKeysByPartialKey(
         ImmutableList.of("one", "two", "two", "one", "one"), overlapedFirstSecondNegativePositions))
-        .isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY3);
-        });
+        .isNotEmpty().containsOnly(KEY3);
 
     softly
         .assertThat(multiKeyMap.getFullKeysByPartialKey(
             ImmutableList.of("one", "two", "two", "three"), overlapedFirstSecondNegativePositions))
-        .isPresent().hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY1, KEY2);
-        });
+        .isNotEmpty().containsOnly(KEY1, KEY2);
 
-    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, manyPositivePositions)).isPresent()
-        .hasValueSatisfying(stream -> {
-          softly.assertThat(stream).containsOnly(KEY1);
-        });
+    softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, manyPositivePositions)).isNotEmpty()
+        .containsOnly(KEY1);
   }
 }

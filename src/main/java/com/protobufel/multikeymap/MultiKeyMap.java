@@ -15,13 +15,11 @@
 package com.protobufel.multikeymap;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,34 +27,31 @@ import java.util.stream.StreamSupport;
 
 public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
-  Optional<Stream<K>> getFullKeysByPartialKey(Iterable<? extends T> partialKey);
+  Stream<K> getFullKeysByPartialKey(Iterable<? extends T> partialKey);
 
-  default Optional<Stream<V>> getValuesByPartialKey(final Iterable<? extends T> partialKey) {
-    return getFullKeysByPartialKey(Objects.requireNonNull(partialKey))
-        .map(fullKeys -> fullKeys.map(key -> get(key)));
+  default Stream<V> getValuesByPartialKey(final Iterable<? extends T> partialKey) {
+    return getFullKeysByPartialKey(Objects.requireNonNull(partialKey)).map(key -> get(key));
   }
 
-  default Optional<Stream<Entry<K, V>>> getEntriesByPartialKey(
-      final Iterable<? extends T> partialKey) {
+  default Stream<Entry<K, V>> getEntriesByPartialKey(final Iterable<? extends T> partialKey) {
     return getFullKeysByPartialKey(Objects.requireNonNull(partialKey))
-        .map(fullKeys -> fullKeys.map(key -> new SimpleImmutableEntry<>(key, get(key))));
+        .map(key -> new SimpleImmutableEntry<>(key, get(key)));
   }
 
-  default Optional<Stream<V>> getValuesByPartialKey(final Iterable<? extends T> partialKey,
+  default Stream<V> getValuesByPartialKey(final Iterable<? extends T> partialKey,
+      final Iterable<Integer> positions) {
+    return getFullKeysByPartialKey(partialKey, positions).map(key -> get(key));
+  }
+
+  default Stream<Entry<K, V>> getEntriesByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
     return getFullKeysByPartialKey(partialKey, positions)
-        .map(fullKeys -> fullKeys.map(key -> get(key)));
+        .map(key -> new SimpleImmutableEntry<>(key, get(key)));
   }
 
-  default Optional<Stream<Entry<K, V>>> getEntriesByPartialKey(
-      final Iterable<? extends T> partialKey, final Iterable<Integer> positions) {
-    return getFullKeysByPartialKey(partialKey, positions)
-        .map(fullKeys -> fullKeys.map(key -> new SimpleImmutableEntry<>(key, get(key))));
-  }
-
-  default Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
+  default Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
-    final Optional<Stream<K>> keyStream = getFullKeysByPartialKey(
+    final Stream<K> keyStream = getFullKeysByPartialKey(
         StreamSupport.stream(Objects.requireNonNull(partialKey).spliterator(), true)
             .collect(Collectors.toSet()));
 
@@ -122,9 +117,7 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
       }
     }
 
-    return keyStream.map(fullKeys -> {
-      final IterableMatcher matcher = new IterableMatcher();
-      return fullKeys.filter(key -> matcher.matches(key));
-    });
+    final IterableMatcher matcher = new IterableMatcher();
+    return keyStream.filter(key -> matcher.matches(key));
   }
 }
