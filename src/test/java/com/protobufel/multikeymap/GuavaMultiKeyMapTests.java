@@ -30,20 +30,18 @@ import junit.framework.TestSuite;
 public class GuavaMultiKeyMapTests extends TestCase {
 
   public static Test suite() {
-    final TestSuite suite = MapTestSuiteBuilder
-        .using(new MultiKeyMapGenerators.StringMultiKeyMapTestGenerator())
-        .named("MultiKeyMap of string keys and values").withFeatures(CollectionSize.ANY,
-            // CollectionFeature.ALLOWS_NULL_VALUES,
-            CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
-            // CollectionFeature.SUPPORTS_ADD,
-            CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
-            // CollectionFeature.SUPPORTS_REMOVE,
-            // CollectionFeature.GENERAL_PURPOSE
-            MapFeature.GENERAL_PURPOSE, 
-            MapFeature.RESTRICTS_KEYS,
-            MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION
-            )
-        .createTestSuite();
+    final TestSuite suite =
+        MapTestSuiteBuilder.using(new MultiKeyMapGenerators.StringMultiKeyMapTestGenerator())
+            .named("MultiKeyMap of string keys and values").withFeatures(CollectionSize.ANY,
+                // CollectionFeature.ALLOWS_NULL_VALUES,
+                CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
+                // CollectionFeature.SUPPORTS_ADD,
+                CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
+                // CollectionFeature.SUPPORTS_REMOVE,
+                // CollectionFeature.GENERAL_PURPOSE
+                MapFeature.GENERAL_PURPOSE, MapFeature.RESTRICTS_KEYS,
+                MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION)
+            .createTestSuite();
     return suite;
   }
 }

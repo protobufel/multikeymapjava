@@ -1,3 +1,4 @@
+package com.protobufel.multikeymap;
 //// Copyright 2017 David Tesler
 ////
 //// Licensed under the Apache License, Version 2.0 (the "License");
