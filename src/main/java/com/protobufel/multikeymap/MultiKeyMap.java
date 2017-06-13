@@ -66,20 +66,20 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
         final Iterator<Integer> it = positions.iterator();
         boolean morePositions = true;
-        int totalCount = 0;
+        final int[] totalCount = {0};
 
         for (final T el : partialKey) {
-          totalCount++;
           final int position;
 
           if (morePositions && (morePositions = it.hasNext()) && ((position = it.next()) >= 0)) {
-            symbols.computeIfAbsent(position, k -> new HashSet<>()).add(el);
+            symbols.computeIfAbsent(position, k -> {totalCount[0] += 1; return new HashSet<>();}).add(el);
           } else {
+            totalCount[0] += 1;
             counters.merge(el, 1, (oldValue, value) -> oldValue + 1);
           }
         }
 
-        this.totalCount = totalCount;
+        this.totalCount = totalCount[0];
       }
 
       boolean matches(final K fullKey) {
