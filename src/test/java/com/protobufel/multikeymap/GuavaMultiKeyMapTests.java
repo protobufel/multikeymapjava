@@ -46,5 +46,4 @@ public class GuavaMultiKeyMapTests extends TestCase {
         .createTestSuite();
     return suite;
   }
-
 }
