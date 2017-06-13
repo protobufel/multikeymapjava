@@ -15,6 +15,7 @@
 package com.protobufel.multikeymap;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,12 +60,8 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
         StreamSupport.stream(Objects.requireNonNull(partialKey).spliterator(), true)
             .collect(Collectors.toSet()));
 
-    if (!keyStream.isPresent()) {
-      return Optional.empty();
-    }
-
     class IterableMatcher {
-      final Map<T, Set<Integer>> symbols;
+      final Map<Integer, Set<T>> symbols;
       final Map<T, Integer> counters;
       final int totalCount;
 
@@ -78,11 +75,12 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
         for (final T el : partialKey) {
           totalCount++;
-          counters.merge(el, 1, (oldValue, value) -> oldValue + 1);
+          final int position;
 
-          if (morePositions && (morePositions = it.hasNext())) {
-            final int position = it.next();
-            symbols.computeIfAbsent(el, k -> new HashSet<>()).add(position);
+          if (morePositions && (morePositions = it.hasNext()) && ((position = it.next()) >= 0)) {
+            symbols.computeIfAbsent(position, k -> new HashSet<>()).add(el);
+          } else {
+            counters.merge(el, 1, (oldValue, value) -> oldValue + 1);
           }
         }
 
@@ -99,28 +97,24 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
         for (final T el : fullKey) {
           i++;
 
-          final Set<Integer> fixedPositions = symbols.get(el);
+          final Set<T> fixedPositionSet = symbols.get(i);
 
-          if ((fixedPositions != null) && fixedPositions.contains(i)) {
+          if (fixedPositionSet == null) {
+            final boolean[] found = {false};
+            counters.computeIfPresent(el, (subKey, count) -> {
+              found[0] = true;
+              return (--count == 0) ? null : count;
+            });
+
+            if (found[0] && (--totalCount == 0)) {
+              return true;
+            }
+          } else if (fixedPositionSet.contains(el)) {
             if (--totalCount == 0) {
               return true;
             }
           } else {
-            final int counter = counters.getOrDefault(el, -1);
-
-            if (counter < 0) {
-              continue;
-            }
-
-            if (--totalCount == 0) {
-              return true;
-            }
-
-            if (counter == 1) {
-              counters.remove(el);
-            } else {
-              counters.put(el, counter - 1);
-            }
+            return false;
           }
         }
 

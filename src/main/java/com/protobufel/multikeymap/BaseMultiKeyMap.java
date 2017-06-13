@@ -15,19 +15,23 @@
 package com.protobufel.multikeymap;
 
 import static java.util.stream.Collectors.toSet;
+import static com.protobufel.multikeymap.Collectors.*;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V> {
@@ -123,9 +127,28 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
       return getFullKeysByPartialKey(partialKey, Collections.emptyList());
     }
 
-    final Set<Set<K>> sets = ((Set<? extends T>) partialKey).stream().unordered()
-        .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).collect(toSet());
-    return Collectors.intersectSets(sets, isEnableParallelStreaming()).map(set -> set.stream());
+    // Java 8 doesn't allow to break the processing and also discourages stateful functions
+    // untill Java 9 takeWhile!
+    // final Set<Set<K>> sets = ((Set<? extends T>) partialKey).stream().unordered()
+    // .map(subKey -> partMap.get(Objects.requireNonNull(subKey))).collect(toSet());
+
+    final List<Set<K>> sets = new ArrayList<>();
+
+    for (T subKey : partialKey) {
+      Set<K> set = partMap.get(Objects.requireNonNull(subKey));
+
+      if (set == null) {
+        return Optional.empty();
+      }
+
+      sets.add(set);
+    }
+    
+    if (sets.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return intersectSets(sets, isEnableParallelStreaming()).map(set -> set.stream());
   }
 
   @Override
@@ -157,7 +180,7 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
   public V put(final K key, final V value) {
     Objects.requireNonNull(value);
     final Object[] oldValue = {null};
-    
+
     fullMap.compute(key, (k, v) -> {
       if (v == null) {
         putPartial(k);
