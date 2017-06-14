@@ -16,11 +16,9 @@ package com.protobufel.multikeymap;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -73,7 +71,8 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
           if (morePositions && (morePositions = it.hasNext()) && ((position = it.next()) >= 0)) {
             if (symbols.put(position, el) != null) {
-              throw new IllegalArgumentException(String.format("duplicate positive position %s", position));
+              throw new IllegalArgumentException(
+                  String.format("duplicate positive position %s", position));
             } else {
               totalCount++;
             }
