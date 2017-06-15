@@ -20,20 +20,69 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * A lite wrapper of a mutable Map which values are Set of actual values
+ *
+ * @param <K> the type of Map's key
+ * @param <V> the type of actual values
+ *
+ * @author David Tesler
+ */
 public interface LiteSetMultimap<K, V> {
 
+  /**
+   * Clears all data
+   */
   void clear();
 
+  /**
+   * Finds the record with the specified key and removes the value, if present, from the set of its
+   * values. If there are no values left in the set, removes the entire record from the
+   * LiteSetMultimap.
+   *
+   * @param key the key to search for
+   * @param value the value to be removed corresponding to the search key
+   * @return true if value is removed, false, otherwise
+   */
   boolean remove(K key, V value);
 
+  /**
+   * Gets the number of records in the LiteSetMultimap.
+   *
+   * @return the size of the the LiteSetMultimap, zero if empty
+   */
   int size();
 
+  /**
+   * Tells whether the LiteSetMultimap is empty.
+   *
+   * @return true if the LiteSetMultimap is empty, false, otherwise
+   */
   boolean isEmpty();
 
+  /**
+   * Gets the live Set of the values corresponding to the search key.
+   *
+   * @param key the key to search for
+   * @return the Set of the values corresponding to the search key
+   */
   Set<V> get(K key);
 
+  /**
+   * Adds the value to the set of values corresponding to the search key. If no such record is
+   * found, creates a new record with the set initialized to the value.
+   *
+   * @param key the key to search for
+   * @param value the value to add to the set of values corresponding to the search key
+   * @return true if value is added, false, otherwise
+   */
   boolean put(K key, V value);
 
+  /**
+   * Creates a new default instance of LiteSetMultimap.
+   *
+   * @return a new instance of the LiteSetMultimap's default implementation.
+   */
   static <K, V> LiteSetMultimap<K, V> newInstance() {
     return newInstance(new HashMap<K, Set<V>>());
   }

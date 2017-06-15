@@ -23,30 +23,100 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * Represents a generic Map of composite keys plus the methods to query it by any combination of
+ * sub-keys.
+ *
+ * @param <T> the type of a sub-key the key consist of
+ * @param <K> the type of a full key, which is an Iterable of its sub-keys, with usage as in a
+ *        regular Map
+ * @param <V> the type of a value which stored in the MultiKeyMap under the corresponding key
+ *
+ * @author David Tesler
+ */
 public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
+  /**
+   * Gets all full keys that contain the partial key set in any order.
+   *
+   * @param partialKey the combination of the sub-keys to search for.
+   * @return a stream of the full keys satisfying the partial key criteria, otherwise, the empty
+   *         stream.
+   */
   Stream<K> getFullKeysByPartialKey(Iterable<? extends T> partialKey);
 
+  /**
+   * Gets all values for which their full keys contain the partial key set in any order.
+   *
+   * @param partialKey the combination of the sub-keys to search for.
+   * @return a stream of the values satisfying the partial key criteria, otherwise, the empty
+   *         stream.
+   */
   default Stream<V> getValuesByPartialKey(final Iterable<? extends T> partialKey) {
     return getFullKeysByPartialKey(Objects.requireNonNull(partialKey)).map(key -> get(key));
   }
 
+  /**
+   * Gets all entries for which their full keys contain the partial key set in any order.
+   *
+   * @param partialKey the combination of the sub-keys to search for.
+   * @return a stream of the entries satisfying the partial key criteria, otherwise, the empty
+   *         stream.
+   */
   default Stream<Entry<K, V>> getEntriesByPartialKey(final Iterable<? extends T> partialKey) {
     return getFullKeysByPartialKey(Objects.requireNonNull(partialKey))
         .map(key -> new SimpleImmutableEntry<>(key, get(key)));
   }
 
+  /**
+   * Gets all values for which their full keys contain the partial key according to the specified
+   * positions.
+   *
+   * @param partialKey the combination of the sub-keys to search for.
+   * @param positions the sequence of positions corresponding to the sequence of partialKey's
+   *        sub-keys, wherein the negative position signifies a non-positional sub-key to search for
+   *        anywhere within the full key, otherwise, its exact position within the full key. The
+   *        size of this list can be smaller than the partialKey list, meaning the rest of the
+   *        partialKey sub-keys are non-positional.
+   * @return a stream of the values satisfying the partial key criteria, otherwise, the empty
+   *         stream.
+   */
   default Stream<V> getValuesByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
     return getFullKeysByPartialKey(partialKey, positions).map(key -> get(key));
   }
 
+  /**
+   * Gets all entries for which their full keys contain the partial key according to the specified
+   * positions.
+   *
+   * @param partialKey the combination of the sub-keys to search for.
+   * @param positions the sequence of positions corresponding to the sequence of partialKey's
+   *        sub-keys, wherein the negative position signifies a non-positional sub-key to search for
+   *        anywhere within the full key, otherwise, its exact position within the full key. The
+   *        size of this list can be smaller than the partialKey list, meaning the rest of the
+   *        partialKey sub-keys are non-positional.
+   * @return a stream of the entries satisfying the partial key criteria, otherwise, the empty
+   *         stream.
+   */
   default Stream<Entry<K, V>> getEntriesByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
     return getFullKeysByPartialKey(partialKey, positions)
         .map(key -> new SimpleImmutableEntry<>(key, get(key)));
   }
 
+  /**
+   * Gets all full keys that contain the partial key according to the specified positions.
+   *
+   * @param partialKey the combination of the sub-keys to search for.
+   * @param positions the sequence of positions corresponding to the sequence of partialKey's
+   *        sub-keys, wherein the negative position signifies a non-positional sub-key to search for
+   *        anywhere within the full key, otherwise, its exact position within the full key. The
+   *        size of this list can be smaller than the partialKey list, meaning the rest of the
+   *        partialKey sub-keys are non-positional.
+   * @return a stream of the full keys satisfying the partial key criteria, otherwise, the empty
+   *         stream.
+   */
   default Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
     final Stream<K> keyStream = getFullKeysByPartialKey(
