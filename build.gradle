@@ -1,6 +1,7 @@
 apply plugin: 'java-library'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'io.codearte.nexus-staging'
 
 apply plugin: "me.champeau.gradle.jmh"
 
@@ -8,7 +9,7 @@ sourceCompatibility = 1.8
 
 group = "com.github.protobufel"
 archivesBaseName = "multikeymapjava"
-version = '0.4.0'
+version = '0.4.1'
 
 uploadArchives {
   repositories {
@@ -54,6 +55,11 @@ uploadArchives {
   }
 }
 
+nexusStaging {
+    packageGroup = "com.github.protobufel.multikeymapjava" //optional if packageGroup == project.getGroup()
+    stagingProfileId = "com.github.protobufel" //when not defined will be got from server using "packageGroup"
+}
+
 jar {
     manifest {
         attributes('Implementation-Title': project.name,
@@ -93,12 +99,15 @@ repositories {
 buildscript {
   repositories {
     jcenter()
+	mavenCentral()
+	//maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
     maven {
       url "https://plugins.gradle.org/m2/"
     }
   }
   dependencies {
     classpath "me.champeau.gradle:jmh-gradle-plugin:0.3.1"
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0"
   }
 }
 
