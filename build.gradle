@@ -12,6 +12,7 @@ archivesBaseName = "multikeymapjava"
 version = '0.4.1'
 
 uploadArchives {
+  onlyIf { project.hasProperty('ossrhUsername') }
   repositories {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -56,6 +57,7 @@ uploadArchives {
 }
 
 nexusStaging {
+	//onlyIf { project.hasProperty('ossrhUsername') }
     packageGroup = "com.github.protobufel.multikeymapjava" //optional if packageGroup == project.getGroup()
     stagingProfileId = "com.github.protobufel" //when not defined will be got from server using "packageGroup"
 }
@@ -74,11 +76,13 @@ task copyJavadocToDoc(type: Copy) {
 }
 
 task javadocJar(type: Jar) {
+	onlyIf { project.hasProperty('ossrhUsername') }
     classifier = 'javadoc'
     from javadoc
 }
 
 task sourcesJar(type: Jar) {
+ 	onlyIf { project.hasProperty('ossrhUsername') }
     classifier = 'sources'
     from sourceSets.main.allSource
 }
