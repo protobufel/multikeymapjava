@@ -95,6 +95,15 @@ signing {
     sign configurations.archives
 }
 
+if( !rootProject.hasProperty("ossrhUsername") ){
+  uploadArchives.enable = false
+  nexusStaging.enable = false
+  javadocJar.enable = false
+  sourcesJar.enable = false
+  artifacts.enable = false
+  signing.enable = false
+}
+
 repositories {
     jcenter()
     mavenCentral()
