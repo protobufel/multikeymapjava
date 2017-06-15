@@ -10,6 +10,8 @@
 apply plugin: 'java-library'
 apply plugin: "me.champeau.gradle.jmh"
 
+version = '0.3.0'
+
 /*
 plugins {
 	id 'java-library'
@@ -64,8 +66,6 @@ dependencies {
     //jmh 'org.openjdk.jmh:jmh-core:1.19'
     //jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
 }
-
-version = '0.1.0'
 
 jar {
     manifest {
