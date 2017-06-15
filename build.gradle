@@ -6,60 +6,87 @@ apply plugin: 'io.codearte.nexus-staging'
 apply plugin: "me.champeau.gradle.jmh"
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 group = "com.github.protobufel"
 archivesBaseName = "multikeymapjava"
 version = '0.4.1'
 
-uploadArchives {
-  onlyIf { project.hasProperty('ossrhUsername') }
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+if (project.hasProperty('ossrhUsername')) {
+	uploadArchives {
+	  repositories {
+	    mavenDeployer {
+	      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+	
+	      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+	        authentication(userName: ossrhUsername, password: ossrhPassword)
+	      }
+	
+	      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+	        authentication(userName: ossrhUsername, password: ossrhPassword)
+	      }
+	
+	      pom.project {
+	        name 'multikeymapjava'
+	        packaging 'jar'
+	        description 'Java 8 implementation of the multi-key map. It behaves like a regular generic Map with the additional ability of getting its values by any combination of partial keys.'
+	        url 'https://github.com/protobufel/multikeymapjava'
+	
+	        scm {
+	          connection 'scm:git:https://github.com/protobufel/multikeymapjava.git'
+	          developerConnection 'scm:git@github.com:protobufel/multikeymapjava.git'
+	          url 'https://github.com/protobufel/multikeymapjava'
+	        }
+	
+	        licenses {
+	          license {
+	            name 'The Apache License, Version 2.0'
+	            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+	          }
+	        }
+	
+	        developers {
+	          developer {
+	            id 'protobufel'
+	            name 'David Tesler'
+	            email 'protobufel@gmail.com'
+	          }
+	        }
+	      }
+	    }
+	  }
+	}
+	
+	nexusStaging {
+	    packageGroup = "com.github.protobufel.multikeymapjava" //optional if packageGroup == project.getGroup()
+	    stagingProfileId = "com.github.protobufel" //when not defined will be got from server using "packageGroup"
+	}
+	
+	task sourcesJar(type: Jar) {
+	 	onlyIf { project.hasProperty('ossrhUsername') }
+	    classifier = 'sources'
+	    from sourceSets.main.allSource
+	}
+	
+	signing {
+	    sign configurations.archives
+	}
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
+	task javadocJar(type: Jar) {
+		onlyIf { project.hasProperty('ossrhUsername') }
+	    classifier = 'javadoc'
+	    from javadoc
+	}
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
-
-      pom.project {
-        name 'multikeymapjava'
-        packaging 'jar'
-        description 'Java 8 implementation of the multi-key map. It behaves like a regular generic Map with the additional ability of getting its values by any combination of partial keys.'
-        url 'https://github.com/protobufel/multikeymapjava'
-
-        scm {
-          connection 'scm:git:https://github.com/protobufel/multikeymapjava.git'
-          developerConnection 'scm:git@github.com:protobufel/multikeymapjava.git'
-          url 'https://github.com/protobufel/multikeymapjava'
-        }
-
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-
-        developers {
-          developer {
-            id 'protobufel'
-            name 'David Tesler'
-            email 'protobufel@gmail.com'
-          }
-        }
-      }
-    }
-  }
-}
-
-nexusStaging {
-	//onlyIf { project.hasProperty('ossrhUsername') }
-    packageGroup = "com.github.protobufel.multikeymapjava" //optional if packageGroup == project.getGroup()
-    stagingProfileId = "com.github.protobufel" //when not defined will be got from server using "packageGroup"
+	task copyJavadocToDoc(type: Copy) {
+		dependsOn javadoc
+		from ("build/docs/javadoc")
+		into ("docs/javadoc")	
+	}
+	
+	artifacts {
+	    archives javadocJar, sourcesJar
+	}
 }
 
 jar {
@@ -67,41 +94,6 @@ jar {
         attributes('Implementation-Title': project.name,
                    'Implementation-Version': project.version)
     }
-}
-
-task copyJavadocToDoc(type: Copy) {
-	dependsOn javadoc
-	from ("build/docs/javadoc")
-	into ("docs/javadoc")	
-}
-
-task javadocJar(type: Jar) {
-	onlyIf { project.hasProperty('ossrhUsername') }
-    classifier = 'javadoc'
-    from javadoc
-}
-
-task sourcesJar(type: Jar) {
- 	onlyIf { project.hasProperty('ossrhUsername') }
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-signing {
-    sign configurations.archives
-}
-
-if( !rootProject.hasProperty("ossrhUsername") ){
-  uploadArchives.enable = false
-  nexusStaging.enable = false
-  javadocJar.enable = false
-  sourcesJar.enable = false
-  artifacts.enable = false
-  signing.enable = false
 }
 
 repositories {
