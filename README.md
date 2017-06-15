@@ -47,6 +47,8 @@ any-position-sub-keys and positional sub-keys, as in the following example:
 
 ```
 
+### For more see the documentation [Documentation](https://protobufel.github.io/multikeymapjava/ "JavaDoc and more").  
+
 Happy coding,
 
 David Tesler
