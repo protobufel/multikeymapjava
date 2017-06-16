@@ -21,12 +21,12 @@ plugins.withType(EclipsePlugin) {
   project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
 group = "com.github.protobufel"
 archivesBaseName = "multikeymapjava"
-version = '0.4.1'
+version = '0.5.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 if (project.hasProperty('ossrhUsername')) {
 	uploadArchives {

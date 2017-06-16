@@ -87,6 +87,12 @@ public interface LiteSetMultimap<K, V> {
     return newInstance(new HashMap<K, Set<V>>());
   }
 
+  /**
+   * Creates a new instance of LiteSetMultimap based on the provided empty map.
+   * 
+   * @param map an empty map of sets of values this LiteSetMultimap will be based on
+   * @return a new instance of LiteSetMultimap based on the provided empty map
+   */
   static <K, V> LiteSetMultimap<K, V> newInstance(final Map<K, Set<V>> map) {
     return new LiteSetMultimap<K, V>() {
       @Override

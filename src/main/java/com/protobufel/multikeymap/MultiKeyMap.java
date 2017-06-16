@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * Represents a generic Map of composite keys plus the methods to query it by any combination of
@@ -119,9 +118,8 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
    */
   default Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
-    final Stream<K> keyStream = getFullKeysByPartialKey(
-        StreamSupport.stream(Objects.requireNonNull(partialKey).spliterator(), true)
-            .collect(Collectors.toSet()));
+    final Stream<K> keyStream = getFullKeysByPartialKey(com.protobufel.multikeymap.Collectors
+        .streamOf(Objects.requireNonNull(partialKey), true).collect(Collectors.toSet()));
 
     class IterableMatcher {
       final Map<Integer, T> symbols;

@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 final class Matchers {
   private Matchers() {}
@@ -148,7 +147,8 @@ final class Matchers {
 
     boolean matches(final Iterable<? extends T> source, final Pattern pattern) {
       Objects.requireNonNull(pattern);
-      final String s = StreamSupport.stream(Objects.requireNonNull(source).spliterator(), false)
+      final String s = com.protobufel.multikeymap.Collectors
+          .streamOf(Objects.requireNonNull(source), false)
           .collect(Collectors.mapping(x -> symbols.getOrDefault(x, ""), Collectors.joining(",")));
       return pattern.matcher(s).matches();
     }
