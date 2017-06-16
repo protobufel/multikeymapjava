@@ -1,5 +1,5 @@
 [![Travis](https://img.shields.io/travis/protobufel/multikeymapjava.svg?style=plastic)](https://travis-ci.org/protobufel/multikeymapjava)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.protobufel/multikeymapjava.svg?style=plastic)](https://search.maven.org/#search%7Cga%7C1%7Cprotobufel)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.protobufel/multikeymapjava.svg?style=plastic)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22multikeymapjava%22)
 
 # MultiKeyMap Java Implementation #
 
