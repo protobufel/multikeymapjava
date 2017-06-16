@@ -79,7 +79,6 @@ if (project.hasProperty('ossrhUsername')) {
 	}
 	
 	task sourcesJar(type: Jar) {
-	 	onlyIf { project.hasProperty('ossrhUsername') }
 	    classifier = 'sources'
 	    from sourceSets.main.allSource
 	}
@@ -89,14 +88,16 @@ if (project.hasProperty('ossrhUsername')) {
 	}
 
 	task javadocJar(type: Jar) {
-		onlyIf { project.hasProperty('ossrhUsername') }
 	    classifier = 'javadoc'
 	    from javadoc
 	}
 
-	task copyJavadocToDoc(type: Copy) {
-		dependsOn javadoc
-		from ("build/docs/javadoc")
+	javadoc {
+		finalizedBy = ["copyJavadocToDoc"]	
+	}
+
+	task copyJavadocToDoc(type: Sync) {
+		from javadoc
 		into ("docs/javadoc")	
 	}
 	
