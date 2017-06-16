@@ -90,11 +90,11 @@ if (project.hasProperty('ossrhUsername')) {
 } else {
 	test {
 	    testLogging {
-	        events "PASSED", "STARTED", "FAILED", "SKIPPED"
+	        events "PASSED", "FAILED", "SKIPPED"
 	        exceptionFormat "short"
 	
 	        debug {
-	            events "started", "skipped", "failed"
+	            events "skipped", "failed"
 	            exceptionFormat "full"
 	        }
 	
