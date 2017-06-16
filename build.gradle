@@ -87,6 +87,20 @@ if (project.hasProperty('ossrhUsername')) {
 	artifacts {
 	    archives javadocJar, sourcesJar
 	}
+} else {
+	test {
+	    testLogging {
+	        events "PASSED", "STARTED", "FAILED", "SKIPPED"
+	        exceptionFormat "short"
+	
+	        debug {
+	            events "started", "skipped", "failed"
+	            exceptionFormat "full"
+	        }
+	
+	        info.events = ["failed", "skipped"]
+	    }
+	}
 }
 
 jar {
