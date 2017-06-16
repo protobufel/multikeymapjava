@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -33,6 +33,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.protobufel.multikeymap.Collectors;
+import com.github.protobufel.multikeymap.MultiKeyMap;
+import com.github.protobufel.multikeymap.MultiKeyMaps;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Range;

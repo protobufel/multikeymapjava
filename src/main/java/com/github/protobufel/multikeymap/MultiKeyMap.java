@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
@@ -118,7 +118,7 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
    */
   default Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
       final Iterable<Integer> positions) {
-    final Stream<K> keyStream = getFullKeysByPartialKey(com.protobufel.multikeymap.Collectors
+    final Stream<K> keyStream = getFullKeysByPartialKey(com.github.protobufel.multikeymap.Collectors
         .streamOf(Objects.requireNonNull(partialKey), true).collect(Collectors.toSet()));
 
     class IterableMatcher {

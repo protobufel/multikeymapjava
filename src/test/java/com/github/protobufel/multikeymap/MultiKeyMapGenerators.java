@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +23,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.github.protobufel.multikeymap.MultiKeyMap;
+import com.github.protobufel.multikeymap.MultiKeyMaps;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.testing.Helpers;
 import com.google.common.collect.testing.SampleElements;

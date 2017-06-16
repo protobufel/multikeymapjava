@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -26,6 +26,9 @@ import java.util.stream.IntStream;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.github.protobufel.multikeymap.MultiKeyMap;
+import com.github.protobufel.multikeymap.MultiKeyMaps;
 
 public class JMHMultiKeyMapVsMapTest {
 

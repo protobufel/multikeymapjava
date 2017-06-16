@@ -1,4 +1,4 @@
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.github.protobufel.multikeymap.MultiKeyMap;
+import com.github.protobufel.multikeymap.MultiKeyMaps;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.testing.Helpers;
 

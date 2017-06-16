@@ -1,5 +1,5 @@
-[![Travis branch](https://img.shields.io/travis/protobufel/multikeymapjava/master.svg?style=plastic)](https://travis-ci.org/protobufel/multikeymapjava)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.protobufel/multikeymapjava.svg?style=plastic)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22multikeymapjava%22)
+[![Travis branch](https://img.shields.io/travis/protobufel/com.github.protobufel.multikeymap/master.svg?style=plastic)](https://travis-ci.org/protobufel/com.github.protobufel.multikeymap)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.protobufel/com.github.protobufel.multikeymap.svg?style=plastic)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22multikeymapjava%22)
 
 # MultiKeyMap Java Implementation #
 
@@ -48,7 +48,7 @@ any-position-sub-keys and positional sub-keys, as in the following example:
 
 ```
 
-### For more see the [JavaDoc Documentation](https://protobufel.github.io/multikeymapjava/javadoc/ "JavaDoc and more").  
+### For more see the [JavaDoc Documentation](https://protobufel.github.io/com.github.protobufel.multikeymap/javadoc/ "JavaDoc and more").  
 
 Happy coding,
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -147,7 +147,7 @@ final class Matchers {
 
     boolean matches(final Iterable<? extends T> source, final Pattern pattern) {
       Objects.requireNonNull(pattern);
-      final String s = com.protobufel.multikeymap.Collectors
+      final String s = com.github.protobufel.multikeymap.Collectors
           .streamOf(Objects.requireNonNull(source), false)
           .collect(Collectors.mapping(x -> symbols.getOrDefault(x, ""), Collectors.joining(",")));
       return pattern.matcher(s).matches();

@@ -1,4 +1,4 @@
-package multikeymapjava;
+package com.github.protobufel.multikeymap;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -29,8 +29,8 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import com.protobufel.multikeymap.MultiKeyMap;
-import com.protobufel.multikeymap.MultiKeyMaps;
+import com.github.protobufel.multikeymap.MultiKeyMap;
+import com.github.protobufel.multikeymap.MultiKeyMaps;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)

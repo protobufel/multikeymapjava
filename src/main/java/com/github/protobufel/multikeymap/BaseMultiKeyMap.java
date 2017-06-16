@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.protobufel.multikeymap;
+package com.github.protobufel.multikeymap;
 
-import static com.protobufel.multikeymap.Collectors.intersectSets;
+import static com.github.protobufel.multikeymap.Collectors.intersectSets;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
