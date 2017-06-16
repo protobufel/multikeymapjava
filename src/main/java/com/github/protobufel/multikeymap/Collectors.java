@@ -71,7 +71,7 @@ public final class Collectors {
   }
 
   /**
-   * Gets a collector which intersect the stream of sets and returns the resulting set.
+   * Gets a collector which intersects the stream of sets and returns the resulting set.
    *
    * @param smallestSet the smallest in size element of the stream of sets, any if there are several
    *        of the same size
@@ -85,7 +85,7 @@ public final class Collectors {
   }
 
   /**
-   * Gets a collector which intersect the stream of sets and returns the resulting set.
+   * Gets a collector which intersects the stream of sets and returns the resulting set.
    *
    * @param smallestSetSupplier the supplier of the smallest in size element of the stream of sets,
    *        any if there are several of the same size
