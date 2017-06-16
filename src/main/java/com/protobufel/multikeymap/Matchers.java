@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -62,32 +63,34 @@ final class Matchers {
   }
 
   static class IterablePositionMatcher<T> {
-    final Map<T, Set<Integer>> symbols;
+    final Map<Integer, Set<T>> symbols;
     final Map<T, Integer> counters;
     final int totalCount;
 
-    IterablePositionMatcher(final Iterable<? extends T> search, final Iterable<Integer> positions) {
-      Objects.requireNonNull(search);
-      Objects.requireNonNull(positions);
-
+    IterablePositionMatcher(final Iterable<? extends T> search,
+        final Iterable<Integer> positions) {
       this.symbols = new HashMap<>();
       this.counters = new HashMap<>();
 
       final Iterator<Integer> it = positions.iterator();
       boolean morePositions = true;
-      int totalCount = 0;
+      final int[] totalCount = {0};
 
       for (final T el : search) {
-        totalCount++;
-        counters.merge(el, 1, (oldValue, value) -> oldValue + 1);
+        final int position;
 
-        if (morePositions && (morePositions = it.hasNext())) {
-          final int position = it.next();
-          symbols.computeIfAbsent(el, k -> new HashSet<>()).add(position);
+        if (morePositions && (morePositions = it.hasNext()) && ((position = it.next()) >= 0)) {
+          symbols.computeIfAbsent(position, k -> {
+            totalCount[0] += 1;
+            return new HashSet<>();
+          }).add(el);
+        } else {
+          totalCount[0] += 1;
+          counters.merge(el, 1, (oldValue, value) -> oldValue + 1);
         }
       }
 
-      this.totalCount = totalCount;
+      this.totalCount = totalCount[0];
     }
 
     boolean matches(final Iterable<? extends T> source) {
@@ -100,28 +103,24 @@ final class Matchers {
       for (final T el : source) {
         i++;
 
-        final Set<Integer> fixedPositions = symbols.get(el);
+        final Set<T> fixedPositionSet = symbols.get(i);
 
-        if ((fixedPositions != null) && fixedPositions.contains(i)) {
+        if (fixedPositionSet == null) {
+          final boolean[] found = {false};
+          counters.computeIfPresent(el, (subKey, count) -> {
+            found[0] = true;
+            return (--count == 0) ? null : count;
+          });
+
+          if (found[0] && (--totalCount == 0)) {
+            return true;
+          }
+        } else if (fixedPositionSet.contains(el)) {
           if (--totalCount == 0) {
             return true;
           }
         } else {
-          final int counter = counters.getOrDefault(el, -1);
-
-          if (counter < 0) {
-            continue;
-          }
-
-          if (--totalCount == 0) {
-            return true;
-          }
-
-          if (counter == 1) {
-            counters.remove(el);
-          } else {
-            counters.put(el, counter - 1);
-          }
+          return false;
         }
       }
 
@@ -144,7 +143,7 @@ final class Matchers {
         symbols.put(el, String.valueOf(i++));
       }
     }
-
+    
     boolean matches(final Iterable<? extends T> source) {
       return matches(source, pattern);
     }
