@@ -1,9 +1,25 @@
-apply plugin: 'java-library'
-apply plugin: 'maven'
-apply plugin: 'signing'
-apply plugin: 'io.codearte.nexus-staging'
 
-apply plugin: "me.champeau.gradle.jmh"
+buildscript {
+  repositories {
+    jcenter()
+	mavenCentral()
+	//maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
+  }
+}
+
+plugins {
+	id 'java-library'
+	id 'maven'
+	id 'signing'
+	id 'io.codearte.nexus-staging' version "0.9.0"
+	
+	id 'eclipse'
+	id "me.champeau.gradle.jmh" version "0.3.1"
+}
+
+plugins.withType(EclipsePlugin) {
+  project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -115,21 +131,6 @@ repositories {
     mavenCentral()
 }
 
-buildscript {
-  repositories {
-    jcenter()
-	mavenCentral()
-	//maven { url "http://oss.sonatype.org/content/repositories/snapshots/" }
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "me.champeau.gradle:jmh-gradle-plugin:0.3.1"
-    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.9.0"
-  }
-}
-
 jmh {
    jmhVersion = '1.19' // Specifies JMH version
    includeTests = false // Allows to include test sources into generate JMH jar, i.e. use it when benchmarks depend on the test classes.
@@ -139,14 +140,12 @@ jmh {
 dependencies {
     //api '...'
 
-    implementation 'org.openjdk.jmh:jmh-core:1.19'
+    jmhCompile 'org.openjdk.jmh:jmh-core:1.19'
+	jmhCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
 	
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.8.0'
     testImplementation 'com.google.guava:guava:22.0'
     testImplementation 'com.google.guava:guava-testlib:22.0'
-    
-    //jmh 'org.openjdk.jmh:jmh-core:1.19'
-    //jmh 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
 }
