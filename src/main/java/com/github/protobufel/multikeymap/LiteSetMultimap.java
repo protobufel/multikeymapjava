@@ -123,6 +123,14 @@ public interface LiteSetMultimap<K, V> {
 
       @Override
       public boolean equals(final Object o) {
+        if (o == this) {
+          return true;
+        }
+
+        if (!(o instanceof Map)) {
+          return false;
+        }
+
         return map.equals(o);
       }
 

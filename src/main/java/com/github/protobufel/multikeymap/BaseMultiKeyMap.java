@@ -225,6 +225,14 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
   @Override
   public boolean equals(final Object o) {
+    if (o == this) {
+      return true;
+    }
+
+    if (!(o instanceof Map)) {
+      return false;
+    }
+    
     return fullMap.equals(o);
   }
 
