@@ -49,7 +49,7 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
         BaseMultiKeyMap.enableParallelStreaming = enableParallelStreaming;
     }
 
-    // TODO remove or re-enable after comparing the performance comparison w/ the Java 8 based
+    // TODO remove or re-enable after comparing the performance w/ the Java 8 based
     // implementation
     // @Override
     // public Optional<Stream<K>> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {

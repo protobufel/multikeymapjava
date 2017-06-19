@@ -33,6 +33,8 @@ import java.util.stream.Stream;
  * @param <K> the type of a full key, which is an Iterable of its sub-keys, with usage as in a
  *            regular Map
  * @param <V> the type of a value which stored in the MultiKeyMap under the corresponding key
+ * @see java.util.Map
+ * @apiNote All implementations assumed to support only {@code @NotNullable values} unless specifically stated!
  * @author David Tesler
  */
 public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
