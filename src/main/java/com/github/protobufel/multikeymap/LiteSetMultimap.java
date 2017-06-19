@@ -26,7 +26,7 @@ import java.util.*;
  * @param <V> the type of actual values
  * @author David Tesler
  */
-public interface LiteSetMultimap<K, V> {
+interface LiteSetMultimap<K, V> {
 
     /**
      * Creates a new default instance of LiteSetMultimap.

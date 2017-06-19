@@ -161,7 +161,7 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
     @Override
     public V get(final Object key) {
-        return fullMap.get(key);
+        return fullMap.get(Objects.requireNonNull(key));
     }
 
     @Override

@@ -25,16 +25,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-//import static
 
 public class MultiKeyMapsTest {
 
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
-
 
     @Before
     public void setUp() throws Exception {
@@ -50,29 +48,29 @@ public class MultiKeyMapsTest {
     }
 
     @Test
-    public void newMultiKeyMap1() throws Exception {
-        miscHelper(MultiKeyMaps.newMultiKeyMap());
-    }
-
-    @Test
-    public void newMultiKeyMap2() throws Exception {
-        miscHelper(MultiKeyMaps.newMultiKeyMap());
-    }
-
-    @Test
-    public void newHashMultiKeyMap() throws Exception {
-        miscHelper(MultiKeyMaps.newMultiKeyMap());
-    }
-
-    @Test
     public void of() throws Exception {
+        HashMap<Iterable<String>, Integer> map = new HashMap<>();
+        HashMap<Iterable<String>, Integer> expected = new HashMap<>();
+
+        softly.assertThat(MultiKeyMaps.of(map)).isNotNull().isEqualTo(map).isEqualTo(expected);
+
+        map = new HashMap<Iterable<String>, Integer>() {{
+            put(Arrays.asList("1", "2"), 1);
+        }};
+        expected = new HashMap<Iterable<String>, Integer>() {{
+            put(Arrays.asList("1", "2"), 1);
+        }};
+
+        softly.assertThat(MultiKeyMaps.of(map)).isNotNull().isEqualTo(map).isEqualTo(expected);
     }
 
     @Test
     public void classSanityTest() throws Exception {
         new ClassSanityTester()
                 .setDefault(String.class, "")
+                .setDistinctValues(String.class, "1", "2")
                 .setDefault(Integer.class, 0)
+                .setDistinctValues(Integer.class, 1, 2)
                 .setDefault(Map.class, new HashMap<String, Integer>())
                 .setDistinctValues(Map.class,
                         new HashMap<String, Integer>() {{
@@ -82,15 +80,12 @@ public class MultiKeyMapsTest {
                             put("2", 2);
                         }}
                 )
-                .setDefault(LiteSetMultimap.class, LiteSetMultimap.<String, Iterable<String>>newInstance())
-                .setDistinctValues(String.class, "1", "2")
-                .setDistinctValues(Integer.class, 1, 2)
                 .forAllPublicStaticMethods(MultiKeyMaps.class)
-                .testEquals()
-                .testNulls()
+                .thatReturn(MultiKeyMap.class)
                 //.testSerializable()
                 //.testEqualsAndSerializable()
-                .thatReturn(MultiKeyMap.class);
+                //.testNulls()
+                .testEquals();
     }
 
     private <T, K extends Iterable<T>, V> void equalityHelper(
