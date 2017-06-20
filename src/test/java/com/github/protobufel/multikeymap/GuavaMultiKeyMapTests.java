@@ -27,22 +27,73 @@ import junit.framework.TestSuite;
 import org.junit.runner.RunWith;
 import org.junit.runners.AllTests;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 @RunWith(AllTests.class)
 public class GuavaMultiKeyMapTests extends TestCase {
 
     public static Test suite() {
         final TestSuite suite =
                 MapTestSuiteBuilder.using(new MultiKeyMapGenerators.StringMultiKeyMapTestGenerator())
-                        .named("MultiKeyMap of string keys and values").withFeatures(CollectionSize.ANY,
+                        .named("MultiKeyMap of strings by default constructor").withFeatures(CollectionSize.ANY,
                         // CollectionFeature.ALLOWS_NULL_VALUES,
                         CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
                         // CollectionFeature.SUPPORTS_ADD,
                         CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
                         // CollectionFeature.SUPPORTS_REMOVE,
                         // CollectionFeature.GENERAL_PURPOSE
-                        MapFeature.GENERAL_PURPOSE, MapFeature.RESTRICTS_KEYS,
+                        MapFeature.GENERAL_PURPOSE,
+                        MapFeature.RESTRICTS_KEYS,
+                        MapFeature.RESTRICTS_VALUES,
                         MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION)
                         .createTestSuite();
+
+        //TODO: investigate why it fails!
+//        final TestSuite suite2 =
+//                MapTestSuiteBuilder.using(new MultiKeyMapGenerators.StringMultiKeyMapTestGenerator(
+//                        MultiKeyMaps.newMultiKeyMap(
+//                                TreeMap<Iterable<String>, String>::new,
+//                                HashMap<String, Set<Iterable<String>>>::new)
+//                ))
+//                        .named("MultiKeyMap of strings by TreeMap").withFeatures(CollectionSize.ANY,
+//                        // CollectionFeature.ALLOWS_NULL_VALUES,
+//                        CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
+//                        // CollectionFeature.SUPPORTS_ADD,
+//                        CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
+//                        // CollectionFeature.SUPPORTS_REMOVE,
+//                        // CollectionFeature.GENERAL_PURPOSE
+//                        MapFeature.GENERAL_PURPOSE,
+//                        MapFeature.RESTRICTS_KEYS,
+//                        MapFeature.RESTRICTS_VALUES,
+//                        MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION)
+//                        .createTestSuite();
+//
+//        suite.addTest(suite2);
+
+
+        final TestSuite suite3 =
+                MapTestSuiteBuilder.using(new MultiKeyMapGenerators.StringMultiKeyMapTestGenerator(
+                        MultiKeyMaps.newMultiKeyMap(
+                                ConcurrentHashMap<Iterable<String>, String>::new,
+                                ConcurrentHashMap<String, Set<Iterable<String>>>::new)
+                ))
+                        .named("MultiKeyMap of strings by ConcurrentHashMap").withFeatures(CollectionSize.ANY,
+                        // CollectionFeature.ALLOWS_NULL_VALUES,
+                        //CollectionFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
+                        // CollectionFeature.SUPPORTS_ADD,
+                        CollectionFeature.SUPPORTS_ITERATOR_REMOVE,
+                        // CollectionFeature.SUPPORTS_REMOVE,
+                        // CollectionFeature.GENERAL_PURPOSE
+                        //MapFeature.FAILS_FAST_ON_CONCURRENT_MODIFICATION,
+                        MapFeature.GENERAL_PURPOSE,
+                        MapFeature.RESTRICTS_KEYS,
+                        MapFeature.RESTRICTS_VALUES
+                )
+                        .createTestSuite();
+
+        suite.addTest(suite3);
+
         return suite;
     }
 }

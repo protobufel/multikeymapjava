@@ -19,6 +19,7 @@ package com.github.protobufel.multikeymap;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -44,11 +45,11 @@ public final class MultiKeyMaps {
      * @return a new instance of the implementation of MultiKeyMap
      * @apiNote Use with caution. This is an advanced functionality.
      */
-    static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
+    public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
             final Supplier<Map<K, V>> mapSupplier,
             final Supplier<Map<T, Set<K>>> supportMapSupplier) {
-        return new BaseMultiKeyMap(mapSupplier.<K, V>get(),
-                LiteSetMultimap.newInstance(supportMapSupplier.get()));
+        return new BaseMultiKeyMap(Objects.requireNonNull(mapSupplier).get(),
+                LiteSetMultimap.newInstance(Objects.requireNonNull(supportMapSupplier).get()));
     }
 
     /**
@@ -76,6 +77,6 @@ public final class MultiKeyMaps {
      * data
      */
     public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> of(final Map<K, V> map) {
-        return new BaseMultiKeyMap<>(new HashMap<>(map), LiteSetMultimap.newInstance());
+        return new BaseMultiKeyMap<>(new HashMap<>(Objects.requireNonNull(map)), LiteSetMultimap.newInstance());
     }
 }

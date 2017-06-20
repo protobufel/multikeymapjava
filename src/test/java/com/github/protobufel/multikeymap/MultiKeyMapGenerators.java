@@ -134,6 +134,13 @@ public final class MultiKeyMapGenerators {
         }
 
         public StringMultiKeyMapTestGenerator(
+                final MultiKeyMap<String, Iterable<String>, String> multiKeyMap) {
+            super(multiKeyMap, new CircularStringSupplier(),
+                    new CircularStringSupplier(ImmutableList.of("1", "2", "3", "4", "5")),
+                    ArrayList<String>::new);
+        }
+
+        public StringMultiKeyMapTestGenerator(
                 final MultiKeyMap<String, Iterable<String>, String> multiKeyMap,
                 final Supplier<String> subKeySupplier, final Supplier<String> valueSupplier,
                 final Supplier<Iterable<String>> collectionSupplier) {
