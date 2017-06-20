@@ -15,4 +15,8 @@ cache:
 jdk:
   - oraclejdk8
   - openjdk8
-  
+before_install:
+  - pip install --user codecov
+
+after_success:
+  - codecov

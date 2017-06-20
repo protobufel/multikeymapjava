@@ -41,7 +41,7 @@ plugins {
 
 group = "com.github.protobufel"
 archivesBaseName = "multikeymapjava"
-version = '0.6.0'
+version = '0.6.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -182,11 +182,12 @@ jacocoTestCoverageVerification {
 
 jacocoTestReport {
     reports {
-        xml.enabled false
-        csv.enabled false
-        html.enabled true
+        xml.enabled true
+        html.enabled false
     }
 }
+
+check.dependsOn jacocoTestReport
 
 dependencies {
     //api '...'
