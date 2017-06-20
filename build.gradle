@@ -31,6 +31,8 @@ plugins {
 
     //id 'eclipse'
     id "me.champeau.gradle.jmh" version "0.3.1"
+
+    id 'jacoco'
 }
 
 //plugins.withType(EclipsePlugin) {
@@ -59,7 +61,7 @@ if (project.hasProperty('ossrhUsername')) {
                 }
 
                 pom.project {
-                    name 'multikeymapjava'
+                    name "multikeymapjava"
                     packaging 'jar'
                     description 'Java 8 implementation of the multi-key map. It behaves like a regular generic Map with the additional ability of getting its values by any combination of partial keys.'
                     url 'https://github.com/protobufel/multikeymapjava'
@@ -152,8 +154,38 @@ jmh {
     jmhVersion = '1.19' // Specifies JMH version
     includeTests = false
     // Allows to include test sources into generate JMH jar, i.e. use it when benchmarks depend on the test classes.
-    duplicateClassesStrategy = 'fail'
+    duplicateClassesStrategy = "fail"
     // Strategy to apply when encountring duplicate classes during creation of the fat jar (i.e. while executing jmhJar task)
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.5
+            }
+        }
+
+        rule {
+            enabled = false
+            element = 'CLASS'
+            includes = ['co.github.protobufel.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 0.3
+            }
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.enabled true
+    }
 }
 
 dependencies {
