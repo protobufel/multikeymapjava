@@ -1,4 +1,5 @@
 [![Travis branch](https://img.shields.io/travis/protobufel/multikeymapjava/master.svg?style=plastic)](https://travis-ci.org/protobufel/multikeymapjava)
+[![codecov](https://codecov.io/gh/protobufel/multikeymapjava/branch/master/graph/badge.svg)](https://codecov.io/gh/protobufel/multikeymapjava)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.protobufel/multikeymapjava.svg?style=plastic)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22multikeymapjava%22)
 
 # MultiKeyMap Java Implementation #
