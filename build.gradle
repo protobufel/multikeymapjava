@@ -27,7 +27,9 @@ plugins {
     id 'java-library'
     id 'maven'
     id 'signing'
+
     id 'io.codearte.nexus-staging' version "0.9.0"
+    id 'net.researchgate.release' version '2.6.0'
 
     //id 'eclipse'
     id "me.champeau.gradle.jmh" version "0.3.1"
@@ -39,12 +41,6 @@ plugins {
 //  project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
 //}
 
-group = "com.github.protobufel"
-archivesBaseName = "multikeymapjava"
-version = '0.6.1-SNAPSHOT'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 if (project.hasProperty('ossrhUsername')) {
     uploadArchives {
@@ -122,6 +118,8 @@ if (project.hasProperty('ossrhUsername')) {
     artifacts {
         archives javadocJar, sourcesJar
     }
+
+    afterReleaseBuild.dependsOn uploadArchives
 } else {
     test {
         testLogging {
