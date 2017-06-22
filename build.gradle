@@ -41,6 +41,10 @@ plugins {
 //  project.eclipse.classpath.plusConfigurations += [ configurations.jmh ]
 //}
 
+group='com.github.protobufel'
+archivesBaseName='multikeymapjava'
+sourceCompatibility=1.8
+targetCompatibility=1.8
 
 if (project.hasProperty('ossrhUsername')) {
     uploadArchives {
