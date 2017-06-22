@@ -34,6 +34,7 @@ public final class MultiKeyMaps {
 
     /**
      * Creates a new MultiKeyMap based on the provided suppliers.
+     * <p>NOTE: Use with caution. This is the advanced functionality.
      *
      * @param mapSupplier        a supplier of {@code Map<K, V>} this MultiKeyMap is based on
      * @param supportMapSupplier a supplier of {@code Map<T, Set<K>>} used by the MultiKeyMap for its extended
@@ -43,7 +44,6 @@ public final class MultiKeyMaps {
      *                           regular Map
      * @param <V>                the type of a value which stored in the MultiKeyMap under the corresponding key
      * @return a new instance of the implementation of MultiKeyMap
-     * @apiNote Use with caution. This is an advanced functionality.
      */
     public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
             final Supplier<Map<K, V>> mapSupplier,

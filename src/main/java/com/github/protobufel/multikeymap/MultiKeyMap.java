@@ -28,13 +28,13 @@ import java.util.stream.Stream;
 /**
  * Represents a generic Map of composite keys plus the methods to query it by any combination of
  * sub-keys.
+ * <p>NOTE: All implementations assumed to support only {@code @NotNullable values} unless specifically stated!
  *
  * @param <T> the type of a sub-key the key consist of
  * @param <K> the type of a full key, which is an Iterable of its sub-keys, with usage as in a
  *            regular Map
  * @param <V> the type of a value which stored in the MultiKeyMap under the corresponding key
  * @author David Tesler
- * @apiNote All implementations assumed to support only {@code @NotNullable values} unless specifically stated!
  * @see java.util.Map
  */
 public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
