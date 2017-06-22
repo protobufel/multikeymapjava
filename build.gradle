@@ -119,6 +119,14 @@ if (project.hasProperty('ossrhUsername')) {
         archives javadocJar, sourcesJar
     }
 
+    release {
+        preCommitText = ''
+        preTagCommitMessage = 'pre tag commit: '
+        tagCommitMessage = 'bumped to '
+        newVersionCommitMessage = 'new version commit: '
+        tagTemplate = "${version}"
+    }
+
     afterReleaseBuild.dependsOn uploadArchives
 } else {
     test {
