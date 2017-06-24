@@ -61,7 +61,7 @@ if (project.hasProperty('ossrhUsername')) {
                 }
 
                 pom.project {
-                    name "multikeymapjava"
+                    name 'multikeymapjava'
                     packaging 'jar'
                     description 'Java 8 implementation of the multi-key map. It behaves like a regular generic Map with the additional ability of getting its values by any combination of partial keys.'
                     url 'https://github.com/protobufel/multikeymapjava'

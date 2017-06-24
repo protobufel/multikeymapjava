@@ -17,10 +17,8 @@
 
 package com.github.protobufel.multikeymap;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -36,20 +34,18 @@ public final class MultiKeyMaps {
      * Creates a new MultiKeyMap based on the provided suppliers.
      * <p>NOTE: Use with caution. This is the advanced functionality.
      *
-     * @param mapSupplier        a supplier of {@code Map<K, V>} this MultiKeyMap is based on
-     * @param supportMapSupplier a supplier of {@code Map<T, Set<K>>} used by the MultiKeyMap for its extended
-     *                           functionality
-     * @param <T>                the type of a sub-key the key consist of
-     * @param <K>                the type of a full key, which is an Iterable of its sub-keys, with usage as in a
-     *                           regular Map
-     * @param <V>                the type of a value which stored in the MultiKeyMap under the corresponding key
+     * @param mapSupplier a supplier of {@code Map<K, V>} this MultiKeyMap is based on
+     * @param concurrent  create a concurrent instance if true, un-synchronized, regular instance, otherwise
+     * @param <T>         the type of a sub-key the key consist of
+     * @param <K>         the type of a full key, which is an Iterable of its sub-keys, with usage as in a
+     *                    regular Map
+     * @param <V>         the type of a value which stored in the MultiKeyMap under the corresponding key
      * @return a new instance of the implementation of MultiKeyMap
      */
     public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
-            final Supplier<Map<K, V>> mapSupplier,
-            final Supplier<Map<T, Set<K>>> supportMapSupplier) {
+            final Supplier<Map<K, V>> mapSupplier, boolean concurrent) {
         return new BaseMultiKeyMap(Objects.requireNonNull(mapSupplier).get(),
-                LiteSetMultimap.newInstance(Objects.requireNonNull(supportMapSupplier).get()));
+                LiteSetMultimap.newInstance(concurrent));
     }
 
     /**
@@ -77,6 +73,6 @@ public final class MultiKeyMaps {
      * data
      */
     public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> of(final Map<K, V> map) {
-        return new BaseMultiKeyMap<>(new HashMap<>(Objects.requireNonNull(map)), LiteSetMultimap.newInstance());
+        return new BaseMultiKeyMap<>(Objects.requireNonNull(map));
     }
 }

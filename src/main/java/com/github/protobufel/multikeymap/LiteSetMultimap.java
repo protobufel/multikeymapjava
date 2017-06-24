@@ -17,7 +17,9 @@
 
 package com.github.protobufel.multikeymap;
 
+import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A lite wrapper of a mutable Map which values are Set of actual values
@@ -34,75 +36,17 @@ interface LiteSetMultimap<K, V> {
      * @return a new instance of the LiteSetMultimap's default implementation.
      */
     static <K, V> LiteSetMultimap<K, V> newInstance() {
-        return newInstance(new HashMap<K, Set<V>>());
+        return newInstance(false);
     }
 
     /**
      * Creates a new instance of LiteSetMultimap based on the provided empty map.
      *
-     * @param map an empty map of sets of values this LiteSetMultimap will be based on
+     * @param concurrent create a concurrent instance if true, un-synchronized, regular instance, otherwise
      * @return a new instance of LiteSetMultimap based on the provided empty map
      */
-    static <K, V> LiteSetMultimap<K, V> newInstance(final Map<K, Set<V>> map) {
-        return new LiteSetMultimap<K, V>() {
-            @Override
-            public int size() {
-                return map.size();
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return map.isEmpty();
-            }
-
-            @Override
-            public Set<V> get(final Object key) {
-                return map.get(key);
-            }
-
-            @Override
-            public boolean put(final K key, final V value) {
-                return map.computeIfAbsent(Objects.requireNonNull(key), k -> new HashSet<>())
-                        .add(Objects.requireNonNull(value));
-            }
-
-            @Override
-            public void clear() {
-                map.clear();
-            }
-
-            @Override
-            public boolean remove(final K key, final V value) {
-                final boolean[] removed = {false};
-                map.computeIfPresent(Objects.requireNonNull(key), (k, v) -> {
-                    if ((removed[0] = v.remove(value)) && v.isEmpty()) {
-                        return null;
-                    }
-
-                    return v;
-                });
-
-                return removed[0];
-            }
-
-            @Override
-            public boolean equals(final Object o) {
-                if (o == this) {
-                    return true;
-                }
-
-                if (!(o instanceof Map)) {
-                    return false;
-                }
-
-                return map.equals(o);
-            }
-
-            @Override
-            public int hashCode() {
-                return map.hashCode();
-            }
-        };
+    static <K, V> LiteSetMultimap<K, V> newInstance(boolean concurrent) {
+        return concurrent ? new ConcurrentLiteSetMultimap<>() : new RegularLiteSetMultimap<>();
     }
 
     /**
@@ -152,4 +96,96 @@ interface LiteSetMultimap<K, V> {
      * @return true if value is added, false, otherwise
      */
     boolean put(K key, V value);
+
+    class ConcurrentLiteSetMultimap<K, V> extends BaseLiteSetMultimap<K, V> implements Serializable {
+
+        public ConcurrentLiteSetMultimap() {
+            super(new ConcurrentHashMap<>());
+        }
+
+        @Override
+        protected Set<V> newSet() {
+            return new ConcurrentHashMap().keySet(true);
+        }
+    }
+
+    class RegularLiteSetMultimap<K, V> extends BaseLiteSetMultimap<K, V> implements Serializable {
+
+        public RegularLiteSetMultimap() {
+            super(new HashMap<>());
+        }
+
+        @Override
+        protected Set<V> newSet() {
+            return new HashSet<>();
+        }
+    }
+
+    abstract class BaseLiteSetMultimap<K, V> implements LiteSetMultimap<K, V> {
+        private final Map<K, Set<V>> map;
+
+        public BaseLiteSetMultimap(Map<K, Set<V>> map) {
+            this.map = map;
+        }
+
+        abstract Set<V> newSet();
+
+        @Override
+        public int size() {
+            return map.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return map.isEmpty();
+        }
+
+        @Override
+        public Set<V> get(final Object key) {
+            return map.get(key);
+        }
+
+        @Override
+        public boolean put(final K key, final V value) {
+            return map.computeIfAbsent(Objects.requireNonNull(key), k -> newSet())
+                    .add(Objects.requireNonNull(value));
+        }
+
+        @Override
+        public void clear() {
+            map.clear();
+        }
+
+        @Override
+        public boolean remove(final K key, final V value) {
+            final boolean[] removed = {false};
+            map.computeIfPresent(Objects.requireNonNull(key), (k, v) -> {
+                if ((removed[0] = v.remove(value)) && v.isEmpty()) {
+                    return null;
+                }
+
+                return v;
+            });
+
+            return removed[0];
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (o == this) {
+                return true;
+            }
+
+            if (!(o instanceof Map)) {
+                return false;
+            }
+
+            return map.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return map.hashCode();
+        }
+    }
 }

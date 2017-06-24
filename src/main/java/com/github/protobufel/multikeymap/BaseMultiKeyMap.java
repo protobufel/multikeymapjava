@@ -17,13 +17,16 @@
 
 package com.github.protobufel.multikeymap;
 
+import java.io.IOException;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static com.github.protobufel.multikeymap.Collectors.intersectSets;
 
-class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V> {
+class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V>, Serializable {
     static boolean enableParallelStreaming = false;
     private Map<K, V> fullMap;
     private transient LiteSetMultimap<T, K> partMap;
@@ -31,14 +34,36 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
     private transient Collection<V> values;
     private transient Set<Entry<K, V>> entrySet;
 
-    BaseMultiKeyMap(final Map<K, V> fullMap, final LiteSetMultimap<T, K> partMap) {
-        super();
-        this.fullMap = fullMap;
-        this.partMap = partMap;
-    }
-
     BaseMultiKeyMap() {
         this(new HashMap<>(), LiteSetMultimap.newInstance());
+    }
+
+    BaseMultiKeyMap(final Map<K, V> sourceMap) {
+        this(new HashMap<>(Objects.requireNonNull(sourceMap)), LiteSetMultimap.newInstance());
+    }
+
+    BaseMultiKeyMap(final Map<K, V> fullMap, final LiteSetMultimap<T, K> partMap) {
+        super();
+        this.fullMap = Objects.requireNonNull(fullMap);
+        this.partMap = Objects.requireNonNull(partMap);
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        readObjectNoData();
+        in.defaultReadObject();
+        // FIXME: initialize partMap
+        fullMap.forEach((k, v) -> putPartial(k));
+    }
+
+    private void readObjectNoData()
+            throws ObjectStreamException {
+// FIXME: implement or remove!
     }
 
     static boolean isEnableParallelStreaming() {
