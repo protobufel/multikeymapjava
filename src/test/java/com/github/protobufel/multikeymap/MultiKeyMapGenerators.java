@@ -68,7 +68,6 @@ public final class MultiKeyMapGenerators {
                     Helpers.mapEntry(newKey(collectionSupplier, subKeySupplier, 4), valueSupplier.get()));
         }
 
-        @SuppressWarnings("unchecked")
         protected K newKey(final Supplier<Iterable<T>> collectionSupplier,
                            final Supplier<T> subKeySupplier, final int index) {
             final Collection<T> key = (Collection<T>) collectionSupplier.get();
@@ -77,7 +76,8 @@ public final class MultiKeyMapGenerators {
                 key.add(subKeySupplier.get());
             }
 
-            return (K) key;
+            final K key1 = (K) key;
+            return key1;
         }
 
         @Override
@@ -101,10 +101,10 @@ public final class MultiKeyMapGenerators {
             return multiKeyMap;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Entry<K, V>[] createArray(final int length) {
-            return (Entry<K, V>[]) new Entry<?, ?>[length];
+            final Entry<K, V>[] entries = (Entry<K, V>[]) new Entry<?, ?>[length];
+            return entries;
         }
 
         @Override
@@ -112,16 +112,16 @@ public final class MultiKeyMapGenerators {
             return insertionOrder;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public K[] createKeyArray(final int length) {
-            return (K[]) new Object[length];
+            final K[] ks = (K[]) new Object[length];
+            return ks;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public V[] createValueArray(final int length) {
-            return (V[]) new Object[length];
+            final V[] vs = (V[]) new Object[length];
+            return vs;
         }
     }
 
@@ -157,7 +157,6 @@ public final class MultiKeyMapGenerators {
                     Helpers.mapEntry(Arrays.asList("five0", "five1", "five2"), "May"));
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public Iterable<String>[] createKeyArray(final int length) {
             return new Iterable[length];

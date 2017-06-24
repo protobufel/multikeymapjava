@@ -21,9 +21,15 @@ import com.google.common.testing.ClassSanityTester;
 import com.google.common.testing.EqualsTester;
 import com.google.common.testing.NullPointerTester;
 import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -33,23 +39,23 @@ public class MultiKeyMapsTest {
     private MapSupplier<Iterable<String>, Integer> hashMapSupplier;
     private MapSupplier<Iterable<String>, Integer> treeMapSupplier;
     private MapSupplier<Iterable<String>, Integer> concurrentMapSupplier;
-    private MultimapSupplier<String, Iterable<String>> hashMultimapSupplier;
-    private MultimapSupplier<String, Iterable<String>> treeMultimapSupplier;
-    private MultimapSupplier<String, Iterable<String>> concurrentMultimapSupplier;
 
     @Before
     public void setUp() throws Exception {
         hashMapSupplier = HashMap<Iterable<String>, Integer>::new;
         treeMapSupplier = TreeMap<Iterable<String>, Integer>::new;
         concurrentMapSupplier = ConcurrentHashMap<Iterable<String>, Integer>::new;
-
-        hashMultimapSupplier = HashMap<String, Set<Iterable<String>>>::new;
-        treeMultimapSupplier = TreeMap<String, Set<Iterable<String>>>::new;
-        concurrentMultimapSupplier = ConcurrentHashMap<String, Set<Iterable<String>>>::new;
     }
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    @Test
+    public void utilityClassTest() throws Exception {
+        softly.assertThat(MultiKeyMaps.class).isFinal().isPublic().satisfies(
+                clazz -> softly.assertThat(clazz.getConstructors()).isEmpty()
+        );
     }
 
     @Test
@@ -59,14 +65,14 @@ public class MultiKeyMapsTest {
 
     @Test
     public void newMultiKeyMapWithSuppliers() throws Exception {
-        miscHelper(MultiKeyMaps.newMultiKeyMap(hashMapSupplier, hashMultimapSupplier));
+        miscHelper(MultiKeyMaps.newMultiKeyMap(hashMapSupplier, false));
     }
 
     @Test
     public void nullPointerTest() throws Exception {
         new NullPointerTester()
                 .setDefault(MapSupplier.class, hashMapSupplier)
-                .setDefault(MultimapSupplier.class, hashMultimapSupplier)
+                .setDefault(boolean.class, false)
                 .setDefault(Map.class, new HashMap<Iterable<String>, Integer>())
                 .testAllPublicStaticMethods(MultiKeyMaps.class);
     }
@@ -88,32 +94,30 @@ public class MultiKeyMapsTest {
         softly.assertThat(MultiKeyMaps.of(map)).isNotNull().isEqualTo(map).isEqualTo(expected);
     }
 
-    @Ignore
     @Test
-    public void classSanityTest() throws Exception {
+    public void ofSanityTest() throws Exception {
         new ClassSanityTester()
-                .setDefault(Map.class, new HashMap<Iterable<String>, Integer>())
+                //.setDefault(Map.class, new HashMap<Iterable<String>, Integer>())
                 .setDistinctValues(Map.class,
-                        new HashMap<String, Integer>() {{
-                            put("1", 1);
+                        new HashMap<Iterable<String>, Integer>() {{
+                            put(Arrays.asList("1", "2", "3"), 1);
+                            put(Arrays.asList("1", "2", "3", "4"), 2);
                         }},
-                        new HashMap<String, Integer>() {{
-                            put("2", 2);
+                        new HashMap<Iterable<String>, Integer>() {{
+                            put(Arrays.asList("2", "3", "4"), 1);
+                            put(Arrays.asList("1", "2", "3"), 2);
                         }}
                 )
-                .setDefault(MapSupplier.class, hashMapSupplier)
-                .setDistinctValues(MapSupplier.class, treeMapSupplier, concurrentMapSupplier)
-
-                .setDefault(MultimapSupplier.class, hashMultimapSupplier)
-                .setDistinctValues(MultimapSupplier.class, treeMultimapSupplier, concurrentMultimapSupplier)
-
-                .forAllPublicStaticMethods(MultiKeyMaps.class)
+                .forAllPublicStaticMethods(MultiKeyMapFactory.class)
                 .thatReturn(MultiKeyMap.class)
+                //.testNulls()
+                .testEqualsAndSerializable();
+    }
 
-                //.testSerializable()
-                //.testEqualsAndSerializable()
-                .testNulls()
-                .testEquals();
+    private static class MultiKeyMapFactory {
+        public static MultiKeyMap<String, Iterable<String>, Integer> of(final Map<Iterable<String>, Integer> map) {
+            return MultiKeyMaps.of(map);
+        }
     }
 
     private <T, K extends Iterable<T>, V> void equalityHelper(
@@ -139,11 +143,5 @@ public class MultiKeyMapsTest {
     public interface MapSupplier<K, V> extends Supplier<Map<K, V>> {
         @Override
         Map<K, V> get();
-    }
-
-    @FunctionalInterface
-    public interface MultimapSupplier<K, V> extends Supplier<Map<K, Set<V>>> {
-        @Override
-        Map<K, Set<V>> get();
     }
 }

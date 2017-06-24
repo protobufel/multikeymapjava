@@ -97,7 +97,15 @@ interface LiteSetMultimap<K, V> {
      */
     boolean put(K key, V value);
 
+    /**
+     * Returns whether this class supports concurrent access.
+     */
+    default boolean isConcurrent() {
+        return getClass().isAssignableFrom(ConcurrentLiteSetMultimap.class);
+    }
+
     class ConcurrentLiteSetMultimap<K, V> extends BaseLiteSetMultimap<K, V> implements Serializable {
+        private static final long serialVersionUID = -5018582265479564955L;
 
         public ConcurrentLiteSetMultimap() {
             super(new ConcurrentHashMap<>());
@@ -110,6 +118,7 @@ interface LiteSetMultimap<K, V> {
     }
 
     class RegularLiteSetMultimap<K, V> extends BaseLiteSetMultimap<K, V> implements Serializable {
+        private static final long serialVersionUID = -1557045174464645635L;
 
         public RegularLiteSetMultimap() {
             super(new HashMap<>());
@@ -122,6 +131,11 @@ interface LiteSetMultimap<K, V> {
     }
 
     abstract class BaseLiteSetMultimap<K, V> implements LiteSetMultimap<K, V> {
+        /**
+         * The base map this class is wrapping
+         *
+         * @serial
+         */
         private final Map<K, Set<V>> map;
 
         public BaseLiteSetMultimap(Map<K, Set<V>> map) {

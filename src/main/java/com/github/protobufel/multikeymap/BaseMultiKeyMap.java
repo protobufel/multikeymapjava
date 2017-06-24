@@ -27,7 +27,13 @@ import java.util.stream.Stream;
 import static com.github.protobufel.multikeymap.Collectors.intersectSets;
 
 class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, V>, Serializable {
+    private static final long serialVersionUID = 995884597801625434L;
     static boolean enableParallelStreaming = false;
+    /**
+     * The base map holding all the Map data
+     *
+     * @serial
+     */
     private Map<K, V> fullMap;
     private transient LiteSetMultimap<T, K> partMap;
     private transient Set<K> keySet;
@@ -50,20 +56,22 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
-
+        out.writeObject(fullMap);
+        out.writeBoolean(partMap.isConcurrent());
     }
 
     private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {
-        readObjectNoData();
         in.defaultReadObject();
-        // FIXME: initialize partMap
+        final boolean concurrent = in.readBoolean();
+        partMap = LiteSetMultimap.newInstance(concurrent);
         fullMap.forEach((k, v) -> putPartial(k));
     }
 
     private void readObjectNoData()
             throws ObjectStreamException {
-// FIXME: implement or remove!
+        fullMap = new HashMap<>();
+        partMap = LiteSetMultimap.newInstance();
     }
 
     static boolean isEnableParallelStreaming() {
@@ -72,6 +80,11 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
 
     static void setEnableParallelStreaming(final boolean enableParallelStreaming) {
         BaseMultiKeyMap.enableParallelStreaming = enableParallelStreaming;
+    }
+
+    @Override
+    public String toString() {
+        return fullMap.toString();
     }
 
     // TODO remove or re-enable after comparing the performance w/ the Java 8 based
@@ -121,11 +134,6 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
     //
     // return Optional.of(result.stream());
     // }
-
-    @Override
-    public String toString() {
-        return fullMap.toString();
-    }
 
     @Override
     public Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey) {

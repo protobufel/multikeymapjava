@@ -40,6 +40,13 @@ public class CollectorsTest {
     }
 
     @Test
+    public void utilityClassTest() throws Exception {
+        softly.assertThat(Collectors.class).isFinal().isPublic().satisfies(
+                clazz -> softly.assertThat(clazz.getConstructors()).isEmpty()
+        );
+    }
+
+    @Test
     public void testToMultiKeyMap() {
         final List<Entry<Iterable<String>, Integer>> input =
                 Arrays.asList(Helpers.mapEntry(Arrays.asList("one", "two", "three"), 1),
