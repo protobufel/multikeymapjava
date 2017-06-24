@@ -128,7 +128,7 @@ public class JMHMultiKeyMapVsMap {
                 .collect(toList());
     }
 
-    @Benchmark
+    @Benchmark()
     public Integer baseline_getValue() {
         return readMap.get(searchKey);
     }

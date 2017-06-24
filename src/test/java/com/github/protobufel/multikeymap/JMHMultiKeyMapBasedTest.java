@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class JMHMultiKeyMapVsMapTest {
+public class JMHMultiKeyMapBasedTest {
 
     public int readContainerSize = 10;
 

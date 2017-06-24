@@ -32,7 +32,7 @@ plugins {
     id 'net.researchgate.release' version '2.6.0'
 
     //id 'eclipse'
-    id "me.champeau.gradle.jmh" version "0.3.1"
+    id "me.champeau.gradle.jmh" version "0.4.2"
 
     id 'jacoco'
 }
@@ -115,9 +115,14 @@ if (project.hasProperty('ossrhUsername')) {
     }
 
     task copyJavadocToDoc(type: Sync) {
-        from javadoc
-        into("docs/javadoc")
+        doLast {
+            from javadoc
+            into("docs/javadoc")
+            println "I am executed!"
+        }
     }
+
+    copyJavadocToDoc.enabled = false
 
     artifacts {
         archives javadocJar, sourcesJar
@@ -129,6 +134,10 @@ if (project.hasProperty('ossrhUsername')) {
         tagCommitMessage = 'bumped to '
         newVersionCommitMessage = 'new version commit: '
 //        tagTemplate = "${version}"
+    }
+
+    beforeReleaseBuild {
+        copyJavadocToDoc.enabled = true
     }
 
     afterReleaseBuild.dependsOn uploadArchives
@@ -164,7 +173,7 @@ jmh {
     jmhVersion = '1.19' // Specifies JMH version
     includeTests = false
     // Allows to include test sources into generate JMH jar, i.e. use it when benchmarks depend on the test classes.
-    duplicateClassesStrategy = "fail"
+    duplicateClassesStrategy = 'FAIL'
     // Strategy to apply when encountring duplicate classes during creation of the fat jar (i.e. while executing jmhJar task)
 }
 
@@ -201,9 +210,6 @@ check.dependsOn jacocoTestReport
 
 dependencies {
     //api '...'
-
-    jmhCompile 'org.openjdk.jmh:jmh-core:1.19'
-    jmhCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
