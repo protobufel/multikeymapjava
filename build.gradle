@@ -115,14 +115,9 @@ if (project.hasProperty('ossrhUsername')) {
     }
 
     task copyJavadocToDoc(type: Sync) {
-        doLast {
-            from javadoc
-            into("docs/javadoc")
-            println "I am executed!"
-        }
+        from javadoc
+        into("docs/javadoc")
     }
-
-    copyJavadocToDoc.enabled = false
 
     artifacts {
         archives javadocJar, sourcesJar
@@ -134,10 +129,6 @@ if (project.hasProperty('ossrhUsername')) {
         tagCommitMessage = 'bumped to '
         newVersionCommitMessage = 'new version commit: '
 //        tagTemplate = "${version}"
-    }
-
-    beforeReleaseBuild {
-        copyJavadocToDoc.enabled = true
     }
 
     afterReleaseBuild.dependsOn uploadArchives
