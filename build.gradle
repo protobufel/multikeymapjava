@@ -110,13 +110,15 @@ if (project.hasProperty('ossrhUsername')) {
         from javadoc
     }
 
-    javadoc {
-        finalizedBy = ["copyJavadocToDoc"]
-    }
+    if (project.hasProperty("release") && (release == true)) {
+        javadoc {
+            finalizedBy = ["copyJavadocToDoc"]
+        }
 
-    task copyJavadocToDoc(type: Sync) {
-        from javadoc
-        into("docs/javadoc")
+        task copyJavadocToDoc(type: Sync) {
+            from javadoc
+            into("docs/javadoc")
+        }
     }
 
     artifacts {
