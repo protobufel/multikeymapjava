@@ -92,7 +92,7 @@ if (project.hasProperty('ossrhUsername')) {
     }
 
     nexusStaging {
-        packageGroup = "com.github.protobufel.multikeymapjava" //optional if packageGroup == project.getGroup()
+        //packageGroup = "com.github.protobufel.multikeymapjava" //optional if packageGroup == project.getGroup()
         stagingProfileId = "com.github.protobufel" //when not defined will be got from server using "packageGroup"
     }
 
@@ -110,20 +110,16 @@ if (project.hasProperty('ossrhUsername')) {
         from javadoc
     }
 
-    if (project.hasProperty("release") && (release == true)) {
-        javadoc {
-            finalizedBy = ["copyJavadocToDoc"]
-        }
-
-        task copyJavadocToDoc(type: Sync) {
-            from javadoc
-            into("docs/javadoc")
-        }
+    task copyJavadocToDoc(type: Sync, group: 'documentation') {
+        from javadoc
+        into("docs/javadoc")
     }
 
     artifacts {
         archives javadocJar, sourcesJar
     }
+
+    preTagCommit.dependsOn copyJavadocToDoc
 
     release {
         preCommitText = ''
@@ -181,7 +177,7 @@ jacocoTestCoverageVerification {
         rule {
             enabled = false
             element = 'CLASS'
-            includes = ['co.github.protobufel.*']
+            includes = ['com.github.protobufel.*']
 
             limit {
                 counter = 'LINE'
@@ -205,6 +201,7 @@ dependencies {
     //api '...'
 
     // Use JUnit test framework
+    testImplementation 'com.github.protobufel:java-common-test:0.1.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:3.8.0'
     testImplementation 'com.google.guava:guava:22.0'
