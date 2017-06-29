@@ -16,23 +16,25 @@
  */
 
 /**
- * <p>
- * Java 8 implementation of the {@link com.github.protobufel.multikeymap.MultiKeyMap}. It behaves like a
- * regular generic Map with the additional ability of getting its values by any combination of
- * partial keys.
- * <p>
- * {@link com.github.protobufel.multikeymap.MultiKeyMaps}'s static factory methods are main entries to this
- * package functionality. Use {@link com.github.protobufel.multikeymap.MultiKeyMaps#newMultiKeyMap()} to
- * get an instance of the default implementation. In addition, one can create a new
- * {@link com.github.protobufel.multikeymap.MultiKeyMap} based on the data copied from the provided map
+ * Java 8 implementation of the {@link com.github.protobufel.multikeymap.MultiKeyMap}. It behaves
+ * like a regular generic Map with the additional ability of getting its values by any combination
+ * of partial keys.
+ *
+ * <p>{@link com.github.protobufel.multikeymap.MultiKeyMaps}'s static factory methods are main
+ * entries to this package functionality. Use {@link
+ * com.github.protobufel.multikeymap.MultiKeyMaps#newMultiKeyMap()} to get an instance of the
+ * default implementation. In addition, one can create a new {@link
+ * com.github.protobufel.multikeymap.MultiKeyMap} based on the data copied from the provided map
  * using {@link com.github.protobufel.multikeymap.MultiKeyMaps#of(java.util.Map)} method.
+ *
+ * <p>For example, one can add any value with the complex key {"Hello", "the", "wonderful",
+ * "World!"}, and then query by any sequence of subkeys like {"wonderful", "Hello"}. In addition,
+ * you can query by a mixture of some any-position-sub-keys and positional sub-keys, as in the
+ * following example:
+ *
  * <p>
- * For example, one can add any value with the complex key {"Hello", "the", "wonderful", "World!"},
- * and then query by any sequence of subkeys like {"wonderful", "Hello"}. In addition, you can query
- * by a mixture of some any-position-sub-keys and positional sub-keys, as in the following example:
- * <p>
- * <pre>
- * {@code
+ *
+ * <pre>{@code
  * MultiKeyMap<String, Iterable<String>, String> map = MultiKeyMaps.newMultiKeyMap();
  *
  * // add a record
@@ -66,8 +68,7 @@
  * .forEach(System.out::println);
  *
  * map.clear();
- * }
- * </pre>
+ * }</pre>
  *
  * @author David Tesler
  */

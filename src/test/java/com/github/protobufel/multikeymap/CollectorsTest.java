@@ -41,23 +41,25 @@ public class CollectorsTest {
 
     @Test
     public void utilityClassTest() throws Exception {
-        softly.assertThat(Collectors.class).isFinal().isPublic().satisfies(
-                clazz -> softly.assertThat(clazz.getConstructors()).isEmpty()
-        );
+        softly
+                .assertThat(Collectors.class)
+                .isFinal()
+                .isPublic()
+                .satisfies(clazz -> softly.assertThat(clazz.getConstructors()).isEmpty());
     }
 
     @Test
     public void testToMultiKeyMap() {
         final List<Entry<Iterable<String>, Integer>> input =
-                Arrays.asList(Helpers.mapEntry(Arrays.asList("one", "two", "three"), 1),
+                Arrays.asList(
+                        Helpers.mapEntry(Arrays.asList("one", "two", "three"), 1),
                         Helpers.mapEntry(Arrays.asList("two", "three"), 2),
                         Helpers.mapEntry(Arrays.asList("two", "one", "three"), 3));
 
         @SuppressWarnings("unchecked") final Entry<Iterable<String>, Integer>[] castArray =
                 (Entry<Iterable<String>, Integer>[]) input.toArray();
 
-        final MultiKeyMap<String, Iterable<String>, Integer> expected =
-                MultiKeyMaps.newMultiKeyMap();
+        final MultiKeyMap<String, Iterable<String>, Integer> expected = MultiKeyMaps.newMultiKeyMap();
         input.stream().forEach(entry -> expected.put(entry.getKey(), entry.getValue()));
 
         final Function<? super Entry<Iterable<String>, Integer>, ? extends Iterable<String>> keyMapper =
@@ -68,20 +70,36 @@ public class CollectorsTest {
         final Supplier<MultiKeyMap<String, Iterable<String>, Integer>> multiKeyMapSupplier =
                 MultiKeyMaps::<String, Iterable<String>, Integer>newMultiKeyMap;
 
-        softly.assertThatCode(() -> CollectorTester.of(Collectors
-                .<Entry<Iterable<String>, Integer>, String, Iterable<String>, Integer, MultiKeyMap<String, Iterable<String>, Integer>>toMultiKeyMap(
-                        keyMapper, valueMapper, mergeFunction, multiKeyMapSupplier))
-                .expectCollects(expected, castArray)).doesNotThrowAnyException();
+        softly
+                .assertThatCode(
+                        () ->
+                                CollectorTester.of(
+                                        Collectors
+                                                .<Entry<Iterable<String>, Integer>, String, Iterable<String>, Integer,
+                                                        MultiKeyMap<String, Iterable<String>, Integer>>
+                                                        toMultiKeyMap(
+                                                        keyMapper, valueMapper, mergeFunction, multiKeyMapSupplier))
+                                        .expectCollects(expected, castArray))
+                .doesNotThrowAnyException();
 
+        softly
+                .assertThatCode(
+                        () ->
+                                CollectorTester.of(
+                                        Collectors
+                                                .<Entry<Iterable<String>, Integer>, String, Iterable<String>, Integer>
+                                                        toMultiKeyMap(keyMapper, valueMapper, mergeFunction))
+                                        .expectCollects(expected, castArray))
+                .doesNotThrowAnyException();
 
-        softly.assertThatCode(() -> CollectorTester.of(Collectors
-                .<Entry<Iterable<String>, Integer>, String, Iterable<String>, Integer>toMultiKeyMap(
-                        keyMapper, valueMapper, mergeFunction))
-                .expectCollects(expected, castArray)).doesNotThrowAnyException();
-
-        softly.assertThatCode(() -> CollectorTester.of(Collectors
-                .<Entry<Iterable<String>, Integer>, String, Iterable<String>, Integer>toMultiKeyMap(
-                        keyMapper, valueMapper))
-                .expectCollects(expected, castArray)).doesNotThrowAnyException();
+        softly
+                .assertThatCode(
+                        () ->
+                                CollectorTester.of(
+                                        Collectors
+                                                .<Entry<Iterable<String>, Integer>, String, Iterable<String>, Integer>
+                                                        toMultiKeyMap(keyMapper, valueMapper))
+                                        .expectCollects(expected, castArray))
+                .doesNotThrowAnyException();
     }
 }

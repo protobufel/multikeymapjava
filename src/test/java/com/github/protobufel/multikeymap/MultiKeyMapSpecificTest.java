@@ -61,8 +61,9 @@ public class MultiKeyMapSpecificTest {
 
     @Before
     public void setUp() throws Exception {
-        final List<Entry<Iterable<String>, Integer>> input = ImmutableList.of(Helpers.mapEntry(KEY1, 1),
-                Helpers.mapEntry(KEY2, 2), Helpers.mapEntry(KEY3, 3));
+        final List<Entry<Iterable<String>, Integer>> input =
+                ImmutableList.of(
+                        Helpers.mapEntry(KEY1, 1), Helpers.mapEntry(KEY2, 2), Helpers.mapEntry(KEY3, 3));
 
         multiKeyMap = MultiKeyMaps.newMultiKeyMap();
         input.forEach(entry -> multiKeyMap.put(entry.getKey(), entry.getValue()));
@@ -91,14 +92,22 @@ public class MultiKeyMapSpecificTest {
     public void testGetFullKeysByPartialKeyNoPositions() {
         softly.assertThat(multiKeyMap.getFullKeysByPartialKey(emptyPartialKey)).isEmpty();
         softly.assertThat(multiKeyMap.getFullKeysByPartialKey(absentPartialKey)).isEmpty();
-        softly.assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(withNullsPartialKey))
+        softly
+                .assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(withNullsPartialKey))
                 .isInstanceOf(NullPointerException.class);
-        softly.assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(nullPartialKey))
+        softly
+                .assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(nullPartialKey))
                 .isInstanceOf(NullPointerException.class);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey)).isNotEmpty()
-                .hasSameSizeAs(multiKeyMap.keySet()).containsOnlyElementsOf(multiKeyMap.keySet());
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1)).isNotEmpty().hasSize(2)
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey))
+                .isNotEmpty()
+                .hasSameSizeAs(multiKeyMap.keySet())
+                .containsOnlyElementsOf(multiKeyMap.keySet());
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1))
+                .isNotEmpty()
+                .hasSize(2)
                 .containsOnly(KEY1, KEY3);
     }
 
@@ -106,14 +115,22 @@ public class MultiKeyMapSpecificTest {
     public void testGetValuesByPartialKeyNoPositions() {
         softly.assertThat(multiKeyMap.getValuesByPartialKey(emptyPartialKey)).isEmpty();
         softly.assertThat(multiKeyMap.getValuesByPartialKey(absentPartialKey)).isEmpty();
-        softly.assertThatThrownBy(() -> multiKeyMap.getValuesByPartialKey(withNullsPartialKey))
+        softly
+                .assertThatThrownBy(() -> multiKeyMap.getValuesByPartialKey(withNullsPartialKey))
                 .isInstanceOf(NullPointerException.class);
-        softly.assertThatThrownBy(() -> multiKeyMap.getValuesByPartialKey(nullPartialKey))
+        softly
+                .assertThatThrownBy(() -> multiKeyMap.getValuesByPartialKey(nullPartialKey))
                 .isInstanceOf(NullPointerException.class);
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(commonPartialKey)).isNotEmpty()
-                .hasSameSizeAs(multiKeyMap.values()).containsOnlyElementsOf(multiKeyMap.values());
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(KEY1)).isNotEmpty().hasSize(2)
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(commonPartialKey))
+                .isNotEmpty()
+                .hasSameSizeAs(multiKeyMap.values())
+                .containsOnlyElementsOf(multiKeyMap.values());
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(KEY1))
+                .isNotEmpty()
+                .hasSize(2)
                 .containsOnly(multiKeyMap.get(KEY1), multiKeyMap.get(KEY3));
     }
 
@@ -121,23 +138,32 @@ public class MultiKeyMapSpecificTest {
     public void testGetEntriesByPartialKeyNoPositions() {
         softly.assertThat(multiKeyMap.getEntriesByPartialKey(emptyPartialKey)).isEmpty();
         softly.assertThat(multiKeyMap.getEntriesByPartialKey(absentPartialKey)).isEmpty();
-        softly.assertThatThrownBy(() -> multiKeyMap.getEntriesByPartialKey(withNullsPartialKey))
+        softly
+                .assertThatThrownBy(() -> multiKeyMap.getEntriesByPartialKey(withNullsPartialKey))
                 .isInstanceOf(NullPointerException.class);
-        softly.assertThatThrownBy(() -> multiKeyMap.getEntriesByPartialKey(nullPartialKey))
+        softly
+                .assertThatThrownBy(() -> multiKeyMap.getEntriesByPartialKey(nullPartialKey))
                 .isInstanceOf(NullPointerException.class);
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(commonPartialKey)).isNotEmpty()
-                .hasSameSizeAs(multiKeyMap.keySet()).containsOnlyElementsOf(multiKeyMap.entrySet());
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(KEY1)).isNotEmpty().hasSize(2)
-                .containsOnly(entryOf(multiKeyMap, KEY1),
-                        entryOf(multiKeyMap, KEY3));
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(commonPartialKey))
+                .isNotEmpty()
+                .hasSameSizeAs(multiKeyMap.keySet())
+                .containsOnlyElementsOf(multiKeyMap.entrySet());
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(KEY1))
+                .isNotEmpty()
+                .hasSize(2)
+                .containsOnly(entryOf(multiKeyMap, KEY1), entryOf(multiKeyMap, KEY3));
     }
 
     @Test
     public void testGetFullKeysByPartialKeyWithPositions() {
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(emptyPartialKey, manyNegativePositions))
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(emptyPartialKey, manyNegativePositions))
                 .isEmpty();
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(absentPartialKey, oneNegativePosition))
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(absentPartialKey, oneNegativePosition))
                 .isEmpty();
         softly
                 .assertThatThrownBy(
@@ -148,41 +174,65 @@ public class MultiKeyMapSpecificTest {
                         () -> multiKeyMap.getFullKeysByPartialKey(nullPartialKey, manyNegativePositions))
                 .isInstanceOf(NullPointerException.class);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey, oneNegativePosition))
-                .isNotEmpty().hasSameSizeAs(multiKeyMap.keySet())
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey, oneNegativePosition))
+                .isNotEmpty()
+                .hasSameSizeAs(multiKeyMap.keySet())
                 .containsOnlyElementsOf(multiKeyMap.keySet());
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey, firstPositivePosition))
-                .isNotEmpty().containsOnly(KEY2, KEY3);
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(commonPartialKey, firstPositivePosition))
+                .isNotEmpty()
+                .containsOnly(KEY2, KEY3);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY2, firstThirdPositivePositions))
-                .isNotEmpty().containsOnly(KEY3);
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(KEY2, firstThirdPositivePositions))
+                .isNotEmpty()
+                .containsOnly(KEY3);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions))
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, twoWrongPositivePositions))
                 .isEmpty();
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("two", "three", "one"),
-                firstNegativeSecondPositions)).isNotEmpty().containsOnly(KEY3);
+        softly
+                .assertThat(
+                        multiKeyMap.getFullKeysByPartialKey(
+                                ImmutableList.of("two", "three", "one"), firstNegativeSecondPositions))
+                .isNotEmpty()
+                .containsOnly(KEY3);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(ImmutableList.of("one", "one", "two"),
-                negativeSecondFirstPositions)).isNotEmpty().containsOnly(KEY3);
+        softly
+                .assertThat(
+                        multiKeyMap.getFullKeysByPartialKey(
+                                ImmutableList.of("one", "one", "two"), negativeSecondFirstPositions))
+                .isNotEmpty()
+                .containsOnly(KEY3);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, wrongFirstNegativePositions))
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, wrongFirstNegativePositions))
                 .isEmpty();
 
-        softly.assertThatThrownBy(() -> multiKeyMap.getFullKeysByPartialKey(
-                ImmutableList.of("one", "two", "two", "one", "one"), overlapedFirstSecondNegativePositions))
+        softly
+                .assertThatThrownBy(
+                        () ->
+                                multiKeyMap.getFullKeysByPartialKey(
+                                        ImmutableList.of("one", "two", "two", "one", "one"),
+                                        overlapedFirstSecondNegativePositions))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        softly.assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, manyPositivePositions)).isNotEmpty()
+        softly
+                .assertThat(multiKeyMap.getFullKeysByPartialKey(KEY1, manyPositivePositions))
+                .isNotEmpty()
                 .containsOnly(KEY1);
     }
 
     @Test
     public void testGetValuesByPartialKeyWithPositions() {
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(emptyPartialKey, manyNegativePositions))
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(emptyPartialKey, manyNegativePositions))
                 .isEmpty();
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(absentPartialKey, oneNegativePosition))
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(absentPartialKey, oneNegativePosition))
                 .isEmpty();
         softly
                 .assertThatThrownBy(
@@ -193,41 +243,63 @@ public class MultiKeyMapSpecificTest {
                         () -> multiKeyMap.getValuesByPartialKey(nullPartialKey, manyNegativePositions))
                 .isInstanceOf(NullPointerException.class);
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(commonPartialKey, oneNegativePosition))
-                .isNotEmpty().hasSameSizeAs(multiKeyMap.keySet())
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(commonPartialKey, oneNegativePosition))
+                .isNotEmpty()
+                .hasSameSizeAs(multiKeyMap.keySet())
                 .containsOnlyElementsOf(multiKeyMap.values());
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(commonPartialKey, firstPositivePosition))
-                .isNotEmpty().containsOnly(multiKeyMap.get(KEY2), multiKeyMap.get(KEY3));
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(commonPartialKey, firstPositivePosition))
+                .isNotEmpty()
+                .containsOnly(multiKeyMap.get(KEY2), multiKeyMap.get(KEY3));
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(KEY2, firstThirdPositivePositions))
-                .isNotEmpty().containsOnly(multiKeyMap.get(KEY3));
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(KEY2, firstThirdPositivePositions))
+                .isNotEmpty()
+                .containsOnly(multiKeyMap.get(KEY3));
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(KEY1, twoWrongPositivePositions))
+        softly.assertThat(multiKeyMap.getValuesByPartialKey(KEY1, twoWrongPositivePositions)).isEmpty();
+
+        softly
+                .assertThat(
+                        multiKeyMap.getValuesByPartialKey(
+                                ImmutableList.of("two", "three", "one"), firstNegativeSecondPositions))
+                .isNotEmpty()
+                .containsOnly(multiKeyMap.get(KEY3));
+
+        softly
+                .assertThat(
+                        multiKeyMap.getValuesByPartialKey(
+                                ImmutableList.of("one", "one", "two"), negativeSecondFirstPositions))
+                .isNotEmpty()
+                .containsOnly(multiKeyMap.get(KEY3));
+
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(KEY1, wrongFirstNegativePositions))
                 .isEmpty();
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(ImmutableList.of("two", "three", "one"),
-                firstNegativeSecondPositions)).isNotEmpty().containsOnly(multiKeyMap.get(KEY3));
-
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(ImmutableList.of("one", "one", "two"),
-                negativeSecondFirstPositions)).isNotEmpty().containsOnly(multiKeyMap.get(KEY3));
-
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(KEY1, wrongFirstNegativePositions))
-                .isEmpty();
-
-        softly.assertThatThrownBy(() -> multiKeyMap.getValuesByPartialKey(
-                ImmutableList.of("one", "two", "two", "one", "one"), overlapedFirstSecondNegativePositions))
+        softly
+                .assertThatThrownBy(
+                        () ->
+                                multiKeyMap.getValuesByPartialKey(
+                                        ImmutableList.of("one", "two", "two", "one", "one"),
+                                        overlapedFirstSecondNegativePositions))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        softly.assertThat(multiKeyMap.getValuesByPartialKey(KEY1, manyPositivePositions)).isNotEmpty()
+        softly
+                .assertThat(multiKeyMap.getValuesByPartialKey(KEY1, manyPositivePositions))
+                .isNotEmpty()
                 .containsOnly(multiKeyMap.get(KEY1));
     }
 
     @Test
     public void testGetEntriesByPartialKeyWithPositions() {
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(emptyPartialKey, manyNegativePositions))
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(emptyPartialKey, manyNegativePositions))
                 .isEmpty();
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(absentPartialKey, oneNegativePosition))
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(absentPartialKey, oneNegativePosition))
                 .isEmpty();
         softly
                 .assertThatThrownBy(
@@ -238,33 +310,55 @@ public class MultiKeyMapSpecificTest {
                         () -> multiKeyMap.getEntriesByPartialKey(nullPartialKey, manyNegativePositions))
                 .isInstanceOf(NullPointerException.class);
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(commonPartialKey, oneNegativePosition))
-                .isNotEmpty().hasSameSizeAs(multiKeyMap.keySet())
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(commonPartialKey, oneNegativePosition))
+                .isNotEmpty()
+                .hasSameSizeAs(multiKeyMap.keySet())
                 .containsOnlyElementsOf(multiKeyMap.entrySet());
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(commonPartialKey, firstPositivePosition))
-                .isNotEmpty().containsOnly(entryOf(multiKeyMap, KEY2), entryOf(multiKeyMap, KEY3));
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(commonPartialKey, firstPositivePosition))
+                .isNotEmpty()
+                .containsOnly(entryOf(multiKeyMap, KEY2), entryOf(multiKeyMap, KEY3));
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(KEY2, firstThirdPositivePositions))
-                .isNotEmpty().containsOnly(entryOf(multiKeyMap, KEY3));
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(KEY2, firstThirdPositivePositions))
+                .isNotEmpty()
+                .containsOnly(entryOf(multiKeyMap, KEY3));
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(KEY1, twoWrongPositivePositions))
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(KEY1, twoWrongPositivePositions))
                 .isEmpty();
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(ImmutableList.of("two", "three", "one"),
-                firstNegativeSecondPositions)).isNotEmpty().containsOnly(entryOf(multiKeyMap, KEY3));
+        softly
+                .assertThat(
+                        multiKeyMap.getEntriesByPartialKey(
+                                ImmutableList.of("two", "three", "one"), firstNegativeSecondPositions))
+                .isNotEmpty()
+                .containsOnly(entryOf(multiKeyMap, KEY3));
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(ImmutableList.of("one", "one", "two"),
-                negativeSecondFirstPositions)).isNotEmpty().containsOnly(entryOf(multiKeyMap, KEY3));
+        softly
+                .assertThat(
+                        multiKeyMap.getEntriesByPartialKey(
+                                ImmutableList.of("one", "one", "two"), negativeSecondFirstPositions))
+                .isNotEmpty()
+                .containsOnly(entryOf(multiKeyMap, KEY3));
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(KEY1, wrongFirstNegativePositions))
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(KEY1, wrongFirstNegativePositions))
                 .isEmpty();
 
-        softly.assertThatThrownBy(() -> multiKeyMap.getEntriesByPartialKey(
-                ImmutableList.of("one", "two", "two", "one", "one"), overlapedFirstSecondNegativePositions))
+        softly
+                .assertThatThrownBy(
+                        () ->
+                                multiKeyMap.getEntriesByPartialKey(
+                                        ImmutableList.of("one", "two", "two", "one", "one"),
+                                        overlapedFirstSecondNegativePositions))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        softly.assertThat(multiKeyMap.getEntriesByPartialKey(KEY1, manyPositivePositions)).isNotEmpty()
+        softly
+                .assertThat(multiKeyMap.getEntriesByPartialKey(KEY1, manyPositivePositions))
+                .isNotEmpty()
                 .containsOnly(entryOf(multiKeyMap, KEY1));
     }
 

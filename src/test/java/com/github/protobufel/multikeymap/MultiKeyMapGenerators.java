@@ -37,15 +37,16 @@ public final class MultiKeyMapGenerators {
         private final Supplier<V> valueSupplier;
         private final Supplier<Iterable<T>> collectionSupplier;
 
-        public MultiKeyMapTestGenerator(final Supplier<T> subKeySupplier,
-                                        final Supplier<V> valueSupplier) {
-            this(MultiKeyMaps.newMultiKeyMap(), subKeySupplier, valueSupplier,
-                    ArrayList<T>::new);
+        public MultiKeyMapTestGenerator(
+                final Supplier<T> subKeySupplier, final Supplier<V> valueSupplier) {
+            this(MultiKeyMaps.newMultiKeyMap(), subKeySupplier, valueSupplier, ArrayList<T>::new);
         }
 
-        public MultiKeyMapTestGenerator(final MultiKeyMap<T, K, V> multiKeyMap,
-                                        final Supplier<T> subKeySupplier, final Supplier<V> valueSupplier,
-                                        final Supplier<Iterable<T>> collectionSupplier) {
+        public MultiKeyMapTestGenerator(
+                final MultiKeyMap<T, K, V> multiKeyMap,
+                final Supplier<T> subKeySupplier,
+                final Supplier<V> valueSupplier,
+                final Supplier<Iterable<T>> collectionSupplier) {
             super();
             this.multiKeyMap = multiKeyMap;
             this.subKeySupplier = subKeySupplier;
@@ -58,8 +59,10 @@ public final class MultiKeyMapGenerators {
             return samples(subKeySupplier, valueSupplier, collectionSupplier);
         }
 
-        protected SampleElements<Entry<K, V>> samples(final Supplier<T> subKeySupplier,
-                                                      final Supplier<V> valueSupplier, final Supplier<Iterable<T>> collectionSupplier) {
+        protected SampleElements<Entry<K, V>> samples(
+                final Supplier<T> subKeySupplier,
+                final Supplier<V> valueSupplier,
+                final Supplier<Iterable<T>> collectionSupplier) {
             return new SampleElements<>(
                     Helpers.mapEntry(newKey(collectionSupplier, subKeySupplier, 0), valueSupplier.get()),
                     Helpers.mapEntry(newKey(collectionSupplier, subKeySupplier, 1), valueSupplier.get()),
@@ -68,8 +71,10 @@ public final class MultiKeyMapGenerators {
                     Helpers.mapEntry(newKey(collectionSupplier, subKeySupplier, 4), valueSupplier.get()));
         }
 
-        protected K newKey(final Supplier<Iterable<T>> collectionSupplier,
-                           final Supplier<T> subKeySupplier, final int index) {
+        protected K newKey(
+                final Supplier<Iterable<T>> collectionSupplier,
+                final Supplier<T> subKeySupplier,
+                final int index) {
             final Collection<T> key = (Collection<T>) collectionSupplier.get();
 
             for (int i = 0; i <= index; i++) {
@@ -129,20 +134,24 @@ public final class MultiKeyMapGenerators {
             extends MultiKeyMapTestGenerator<String, Iterable<String>, String> {
 
         public StringMultiKeyMapTestGenerator() {
-            super(new CircularStringSupplier(),
+            super(
+                    new CircularStringSupplier(),
                     new CircularStringSupplier(ImmutableList.of("1", "2", "3", "4", "5")));
         }
 
         public StringMultiKeyMapTestGenerator(
                 final MultiKeyMap<String, Iterable<String>, String> multiKeyMap) {
-            super(multiKeyMap, new CircularStringSupplier(),
+            super(
+                    multiKeyMap,
+                    new CircularStringSupplier(),
                     new CircularStringSupplier(ImmutableList.of("1", "2", "3", "4", "5")),
                     ArrayList<String>::new);
         }
 
         public StringMultiKeyMapTestGenerator(
                 final MultiKeyMap<String, Iterable<String>, String> multiKeyMap,
-                final Supplier<String> subKeySupplier, final Supplier<String> valueSupplier,
+                final Supplier<String> subKeySupplier,
+                final Supplier<String> valueSupplier,
                 final Supplier<Iterable<String>> collectionSupplier) {
             super(multiKeyMap, subKeySupplier, valueSupplier, collectionSupplier);
         }

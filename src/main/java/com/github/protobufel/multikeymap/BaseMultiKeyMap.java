@@ -35,6 +35,7 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
      * @serial
      */
     private Map<K, V> fullMap;
+
     private transient LiteSetMultimap<T, K> partMap;
     private transient Set<K> keySet;
     private transient Collection<V> values;
@@ -54,32 +55,29 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
         this.partMap = Objects.requireNonNull(partMap);
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-            throws IOException {
-        out.writeObject(fullMap);
-        out.writeBoolean(partMap.isConcurrent());
-    }
-
-    private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        final boolean concurrent = in.readBoolean();
-        partMap = LiteSetMultimap.newInstance(concurrent);
-        fullMap.forEach((k, v) -> putPartial(k));
-    }
-
-    private void readObjectNoData()
-            throws ObjectStreamException {
-        fullMap = new HashMap<>();
-        partMap = LiteSetMultimap.newInstance();
-    }
-
     static boolean isEnableParallelStreaming() {
         return enableParallelStreaming;
     }
 
     static void setEnableParallelStreaming(final boolean enableParallelStreaming) {
         BaseMultiKeyMap.enableParallelStreaming = enableParallelStreaming;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        out.writeObject(fullMap);
+        out.writeBoolean(partMap.isConcurrent());
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        final boolean concurrent = in.readBoolean();
+        partMap = LiteSetMultimap.newInstance(concurrent);
+        fullMap.forEach((k, v) -> putPartial(k));
+    }
+
+    private void readObjectNoData() throws ObjectStreamException {
+        fullMap = new HashMap<>();
+        partMap = LiteSetMultimap.newInstance();
     }
 
     @Override
@@ -202,15 +200,17 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
         Objects.requireNonNull(value);
         final Object[] oldValue = {null};
 
-        fullMap.compute(key, (k, v) -> {
-            if (v == null) {
-                putPartial(k);
-            } else {
-                oldValue[0] = v;
-            }
+        fullMap.compute(
+                key,
+                (k, v) -> {
+                    if (v == null) {
+                        putPartial(k);
+                    } else {
+                        oldValue[0] = v;
+                    }
 
-            return value;
-        });
+                    return value;
+                });
 
         @SuppressWarnings("unchecked") final V oldV = (V) oldValue[0];
         return oldV;
@@ -220,11 +220,13 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
     public V remove(final Object key) {
         @SuppressWarnings("unchecked") final K fullKey = (K) key;
         final Object[] oldValue = {null};
-        fullMap.computeIfPresent(fullKey, (k, v) -> {
-            deletePartial(k);
-            oldValue[0] = v;
-            return null;
-        });
+        fullMap.computeIfPresent(
+                fullKey,
+                (k, v) -> {
+                    deletePartial(k);
+                    oldValue[0] = v;
+                    return null;
+                });
 
         @SuppressWarnings("unchecked") final V oldV = (V) oldValue[0];
         return oldV;
@@ -500,5 +502,5 @@ class BaseMultiKeyMap<T, K extends Iterable<T>, V> implements MultiKeyMap<T, K, 
             it.remove();
             deletePartial(current.getKey());
         }
-    }
+  }
 }

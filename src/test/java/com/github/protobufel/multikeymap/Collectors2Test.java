@@ -44,22 +44,29 @@ public class Collectors2Test {
     private static final Set<Set<Integer>> nonEmptyResult1;
 
     static {
-        powerSet = ImmutableSet.<Set<Integer>>builder()
-                .addAll(Sets.powerSet(ImmutableSet.of(1, 2, 3, 4, 5))).build();
+        powerSet =
+                ImmutableSet.<Set<Integer>>builder()
+                        .addAll(Sets.powerSet(ImmutableSet.of(1, 2, 3, 4, 5)))
+                        .build();
         nonEmpty = powerSet.stream().filter(set -> set.size() > 0).collect(toSet());
         ofSize2upList = nonEmpty.stream().filter(set -> set.size() > 1).collect(toSet());
         ofSize3upWithNonIntersecting =
                 ImmutableSet.<Set<Integer>>builder().addAll(nonEmpty).add(ImmutableSet.of(6, 7, 8)).build();
-        nonEmptyResult1 = ImmutableSet.<Set<Integer>>builder().add(ImmutableSortedSet.of(1, 2, 3, 4, 5))
-                .add(Sets.subSet(ImmutableSortedSet.of(1, 2, 3, 4, 5), Range.closed(1, 3)))
-                .add(Sets.subSet(ImmutableSortedSet.of(1, 2, 3, 4, 5), Range.closed(2, 4)))
-                .add(Sets.subSet(ImmutableSortedSet.of(1, 2, 3, 4, 5), Range.closed(2, 5))).build();
+        nonEmptyResult1 =
+                ImmutableSet.<Set<Integer>>builder()
+                        .add(ImmutableSortedSet.of(1, 2, 3, 4, 5))
+                        .add(Sets.subSet(ImmutableSortedSet.of(1, 2, 3, 4, 5), Range.closed(1, 3)))
+                        .add(Sets.subSet(ImmutableSortedSet.of(1, 2, 3, 4, 5), Range.closed(2, 4)))
+                        .add(Sets.subSet(ImmutableSortedSet.of(1, 2, 3, 4, 5), Range.closed(2, 5)))
+                        .build();
     }
 
     @Rule
     public final JUnitSoftAssertions softly = new JUnitSoftAssertions();
+
     @Parameter(0)
     public Set<Set<Integer>> input;
+
     @Parameter(1)
     public Set<Integer> expected;
 
@@ -70,25 +77,26 @@ public class Collectors2Test {
                 new Object[]{nonEmpty, Collections.emptySet()},
                 new Object[]{ofSize2upList, Collections.emptySet()},
                 new Object[]{ofSize3upWithNonIntersecting, Collections.emptySet()},
-                new Object[]{nonEmptyResult1, ImmutableSet.of(2, 3)}
-        );
+                new Object[]{nonEmptyResult1, ImmutableSet.of(2, 3)});
     }
 
     @Before
     public void setUp() throws Exception {
     }
 
-
     @Test
     public void testIntersectSets() {
-        softly.assertThat(Collectors.intersectSets(input, false))
+        softly
+                .assertThat(Collectors.intersectSets(input, false))
                 .hasSameElementsAs(Collectors.intersectSets(input, true));
 
-        ImmutableList.of(false, true).forEach(parallel ->
-                softly.assertThat(Collectors.intersectSets(input, parallel))
-                        .doesNotContainNull()
-                        .hasSameElementsAs(expected)
-        );
+        ImmutableList.of(false, true)
+                .forEach(
+                        parallel ->
+                                softly
+                                        .assertThat(Collectors.intersectSets(input, parallel))
+                                        .doesNotContainNull()
+                                        .hasSameElementsAs(expected));
     }
 
     @Test
@@ -96,18 +104,27 @@ public class Collectors2Test {
         collectorTesterHelper(input, expected);
     }
 
-    private void collectorTesterHelper(final Collection<Set<Integer>> source,
-                                       final Set<Integer> expected) {
+    private void collectorTesterHelper(
+            final Collection<Set<Integer>> source, final Set<Integer> expected) {
         @SuppressWarnings("unchecked") final Set<Integer>[] castArray = (Set<Integer>[]) source.toArray(new Set<?>[0]);
-        softly.assertThatCode(() -> CollectorTester.of(Collectors.setIntersecting(getSmallest(source), false))
-                .expectCollects(expected, castArray)).doesNotThrowAnyException();
+        softly
+                .assertThatCode(
+                        () ->
+                                CollectorTester.of(Collectors.setIntersecting(getSmallest(source), false))
+                                        .expectCollects(expected, castArray))
+                .doesNotThrowAnyException();
 
-        softly.assertThatCode(() -> CollectorTester.of(Collectors.setIntersecting(getSmallest(source), true))
-                .expectCollects(expected, castArray)).doesNotThrowAnyException();
+        softly
+                .assertThatCode(
+                        () ->
+                                CollectorTester.of(Collectors.setIntersecting(getSmallest(source), true))
+                                        .expectCollects(expected, castArray))
+                .doesNotThrowAnyException();
     }
 
     private <T> Set<T> getSmallest(final Iterable<Set<T>> sets) {
-        return Streams.stream(sets).min(Comparator.comparingInt(Set::size))
+        return Streams.stream(sets)
+                .min(Comparator.comparingInt(Set::size))
                 .orElse(Collections.emptySet());
     }
 }

@@ -28,11 +28,13 @@ import java.util.stream.Stream;
 /**
  * Represents a generic Map of composite keys plus the methods to query it by any combination of
  * sub-keys.
- * <p>NOTE: All implementations assumed to support only {@code @NotNullable values} unless specifically stated!
+ *
+ * <p>NOTE: All implementations assumed to support only {@code @NotNullable values} unless
+ * specifically stated!
  *
  * @param <T> the type of a sub-key the key consist of
  * @param <K> the type of a full key, which is an Iterable of its sub-keys, with usage as in a
- *            regular Map
+ *     regular Map
  * @param <V> the type of a value which stored in the MultiKeyMap under the corresponding key
  * @author David Tesler
  * @see java.util.Map
@@ -78,14 +80,14 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
      * @param partialKey the combination of the sub-keys to search for.
      * @param positions  the sequence of positions corresponding to the sequence of partialKey's
      *                   sub-keys, wherein the negative position signifies a non-positional sub-key to search for
-     *                   anywhere within the full key, otherwise, its exact position within the full key. The
-     *                   size of this list can be smaller than the partialKey list, meaning the rest of the
-     *                   partialKey sub-keys are non-positional.
+     *                   anywhere within the full key, otherwise, its exact position within the full key. The size
+     *                   of this list can be smaller than the partialKey list, meaning the rest of the partialKey
+     *                   sub-keys are non-positional.
      * @return a stream of the values satisfying the partial key criteria, otherwise, the empty
      * stream.
      */
-    default Stream<V> getValuesByPartialKey(final Iterable<? extends T> partialKey,
-                                            final Iterable<Integer> positions) {
+    default Stream<V> getValuesByPartialKey(
+            final Iterable<? extends T> partialKey, final Iterable<Integer> positions) {
         return getFullKeysByPartialKey(partialKey, positions).map(this::get);
     }
 
@@ -96,14 +98,14 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
      * @param partialKey the combination of the sub-keys to search for.
      * @param positions  the sequence of positions corresponding to the sequence of partialKey's
      *                   sub-keys, wherein the negative position signifies a non-positional sub-key to search for
-     *                   anywhere within the full key, otherwise, its exact position within the full key. The
-     *                   size of this list can be smaller than the partialKey list, meaning the rest of the
-     *                   partialKey sub-keys are non-positional.
+     *                   anywhere within the full key, otherwise, its exact position within the full key. The size
+     *                   of this list can be smaller than the partialKey list, meaning the rest of the partialKey
+     *                   sub-keys are non-positional.
      * @return a stream of the entries satisfying the partial key criteria, otherwise, the empty
      * stream.
      */
-    default Stream<Entry<K, V>> getEntriesByPartialKey(final Iterable<? extends T> partialKey,
-                                                       final Iterable<Integer> positions) {
+    default Stream<Entry<K, V>> getEntriesByPartialKey(
+            final Iterable<? extends T> partialKey, final Iterable<Integer> positions) {
         return getFullKeysByPartialKey(partialKey, positions)
                 .map(key -> new SimpleImmutableEntry<>(key, get(key)));
     }
@@ -114,16 +116,19 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
      * @param partialKey the combination of the sub-keys to search for.
      * @param positions  the sequence of positions corresponding to the sequence of partialKey's
      *                   sub-keys, wherein the negative position signifies a non-positional sub-key to search for
-     *                   anywhere within the full key, otherwise, its exact position within the full key. The
-     *                   size of this list can be smaller than the partialKey list, meaning the rest of the
-     *                   partialKey sub-keys are non-positional.
+     *                   anywhere within the full key, otherwise, its exact position within the full key. The size
+     *                   of this list can be smaller than the partialKey list, meaning the rest of the partialKey
+     *                   sub-keys are non-positional.
      * @return a stream of the full keys satisfying the partial key criteria, otherwise, the empty
      * stream.
      */
-    default Stream<K> getFullKeysByPartialKey(final Iterable<? extends T> partialKey,
-                                              final Iterable<Integer> positions) {
-        final Stream<K> keyStream = getFullKeysByPartialKey(com.github.protobufel.multikeymap.Collectors
-                .streamOf(Objects.requireNonNull(partialKey), true).collect(Collectors.toSet()));
+    default Stream<K> getFullKeysByPartialKey(
+            final Iterable<? extends T> partialKey, final Iterable<Integer> positions) {
+        final Stream<K> keyStream =
+                getFullKeysByPartialKey(
+                        com.github.protobufel.multikeymap.Collectors.streamOf(
+                                Objects.requireNonNull(partialKey), true)
+                                .collect(Collectors.toSet()));
 
         class IterableMatcher {
             final Map<Integer, T> symbols;
@@ -171,10 +176,12 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
 
                     if (fixedPositionSubKey == null) {
                         final boolean[] found = {false};
-                        counters.computeIfPresent(el, (subKey, count) -> {
-                            found[0] = true;
-                            return (--count == 0) ? null : count;
-                        });
+                        counters.computeIfPresent(
+                                el,
+                                (subKey, count) -> {
+                                    found[0] = true;
+                                    return (--count == 0) ? null : count;
+                                });
 
                         if (found[0] && (--totalCount == 0)) {
                             return true;
@@ -182,17 +189,17 @@ public interface MultiKeyMap<T, K extends Iterable<T>, V> extends Map<K, V> {
                     } else if (fixedPositionSubKey.equals(el)) {
                         if (--totalCount == 0) {
                             return true;
-                        }
-                    } else {
-                        return false;
-                    }
-                }
-
-                return totalCount == 0;
             }
+          } else {
+            return false;
+          }
         }
 
-        final IterableMatcher matcher = new IterableMatcher();
-        return keyStream.filter(matcher::matches);
+        return totalCount == 0;
+      }
     }
+
+    final IterableMatcher matcher = new IterableMatcher();
+    return keyStream.filter(matcher::matches);
+  }
 }

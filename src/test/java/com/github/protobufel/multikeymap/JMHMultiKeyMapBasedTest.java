@@ -80,30 +80,45 @@ public class JMHMultiKeyMapBasedTest {
     }
 
     Map<Iterable<String>, Integer> generateMap(final int containerSize) {
-        return IntStream.range(0, containerSize).boxed()
+        return IntStream.range(0, containerSize)
+                .boxed()
                 .map(i -> new SimpleImmutableEntry<>(generateKey(i), i))
                 .collect(toMap(SimpleImmutableEntry::getKey, SimpleImmutableEntry::getValue));
     }
 
     List<String> generateKey(final Integer recordIndex) {
-        return IntStream.range(recordIndex, recordIndex + keySize).boxed().map(j -> IntStream
-                .range(j, j + subKeySize).boxed().map(String::valueOf).collect(Collectors.joining()))
+        return IntStream.range(recordIndex, recordIndex + keySize)
+                .boxed()
+                .map(
+                        j ->
+                                IntStream.range(j, j + subKeySize)
+                                        .boxed()
+                                        .map(String::valueOf)
+                                        .collect(Collectors.joining()))
                 .collect(toList());
     }
 
-    List<Integer> generatePartialKeyPositions(final Integer recordIndex,
-                                              final int nthPositivePosition, final int nthSkippedPosition) {
-        return IntStream.range(0, keySize).filter(pos -> (pos % nthSkippedPosition) != 0)
-                .map(pos -> (pos % nthPositivePosition) == 0 ? pos : -1).boxed().collect(toList());
+    List<Integer> generatePartialKeyPositions(
+            final Integer recordIndex, final int nthPositivePosition, final int nthSkippedPosition) {
+        return IntStream.range(0, keySize)
+                .filter(pos -> (pos % nthSkippedPosition) != 0)
+                .map(pos -> (pos % nthPositivePosition) == 0 ? pos : -1)
+                .boxed()
+                .collect(toList());
     }
 
-    List<String> generatePartialKey(final Integer recordIndex, final int nthPositivePosition,
-                                    final int nthSkippedPosition) {
+    List<String> generatePartialKey(
+            final Integer recordIndex, final int nthPositivePosition, final int nthSkippedPosition) {
         return IntStream.range(recordIndex, recordIndex + keySize)
                 .filter(pos -> (pos % nthSkippedPosition) != 0)
-                .map(pos -> (pos % nthPositivePosition) == 0 ? pos : -1).boxed()
-                .map(j -> IntStream.range(j, j + subKeySize).boxed().map(String::valueOf)
-                        .collect(Collectors.joining()))
+                .map(pos -> (pos % nthPositivePosition) == 0 ? pos : -1)
+                .boxed()
+                .map(
+                        j ->
+                                IntStream.range(j, j + subKeySize)
+                                        .boxed()
+                                        .map(String::valueOf)
+                                        .collect(Collectors.joining()))
                 .collect(toList());
     }
 

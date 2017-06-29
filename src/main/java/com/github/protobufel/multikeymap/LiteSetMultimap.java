@@ -42,16 +42,15 @@ interface LiteSetMultimap<K, V> {
     /**
      * Creates a new instance of LiteSetMultimap based on the provided empty map.
      *
-     * @param concurrent create a concurrent instance if true, un-synchronized, regular instance, otherwise
+     * @param concurrent create a concurrent instance if true, un-synchronized, regular instance,
+     *                   otherwise
      * @return a new instance of LiteSetMultimap based on the provided empty map
      */
     static <K, V> LiteSetMultimap<K, V> newInstance(boolean concurrent) {
         return concurrent ? new ConcurrentLiteSetMultimap<>() : new RegularLiteSetMultimap<>();
     }
 
-    /**
-     * Clears all data
-     */
+    /** Clears all data */
     void clear();
 
     /**
@@ -91,7 +90,7 @@ interface LiteSetMultimap<K, V> {
      * Adds the value to the set of values corresponding to the search key. If no such record is
      * found, creates a new record with the set initialized to the value.
      *
-     * @param key   the key to search for
+     * @param key the key to search for
      * @param value the value to add to the set of values corresponding to the search key
      * @return true if value is added, false, otherwise
      */
@@ -173,13 +172,15 @@ interface LiteSetMultimap<K, V> {
         @Override
         public boolean remove(final K key, final V value) {
             final boolean[] removed = {false};
-            map.computeIfPresent(Objects.requireNonNull(key), (k, v) -> {
-                if ((removed[0] = v.remove(value)) && v.isEmpty()) {
-                    return null;
-                }
+            map.computeIfPresent(
+                    Objects.requireNonNull(key),
+                    (k, v) -> {
+                        if ((removed[0] = v.remove(value)) && v.isEmpty()) {
+                            return null;
+                        }
 
-                return v;
-            });
+                        return v;
+                    });
 
             return removed[0];
         }
@@ -199,7 +200,7 @@ interface LiteSetMultimap<K, V> {
 
         @Override
         public int hashCode() {
-            return map.hashCode();
-        }
+      return map.hashCode();
     }
+  }
 }

@@ -47,11 +47,13 @@ public final class Collectors {
      * @param parallel use parallel processing if true, sequential if false
      * @return the result of the intersection wrapped in Optional, or the empty Optional.
      */
-    public static <T> Set<T> intersectSets(final Iterable<? extends Set<T>> source,
-                                           final boolean parallel) {
+    public static <T> Set<T> intersectSets(
+            final Iterable<? extends Set<T>> source, final boolean parallel) {
         return streamOf(Objects.requireNonNull(source), parallel)
                 .min(comparingInt(set -> Objects.requireNonNull(set).size()))
-                .map(smallestSet -> streamOf(source, parallel).collect(setIntersecting(smallestSet, parallel)))
+                .map(
+                        smallestSet ->
+                                streamOf(source, parallel).collect(setIntersecting(smallestSet, parallel)))
                 .orElse(Collections.emptySet());
     }
 
@@ -74,8 +76,8 @@ public final class Collectors {
      * @param <T>         the type of the elements of the sets
      * @return the collector to perform the intersection of all elements of the stream of sets
      */
-    public static <T> Collector<Set<T>, Set<T>, Set<T>> setIntersecting(final Set<T> smallestSet,
-                                                                        final boolean parallel) {
+    public static <T> Collector<Set<T>, Set<T>, Set<T>> setIntersecting(
+            final Set<T> smallestSet, final boolean parallel) {
         return setIntersecting(() -> smallestSet, parallel);
     }
 
@@ -90,7 +92,8 @@ public final class Collectors {
      */
     public static <T> Collector<Set<T>, Set<T>, Set<T>> setIntersecting(
             final Supplier<Set<T>> smallestSetSupplier, final boolean parallel) {
-        return parallel ? new ConcurrentSetIntersecting<>(smallestSetSupplier)
+        return parallel
+                ? new ConcurrentSetIntersecting<>(smallestSetSupplier)
                 : new SequentialSetIntersecting<>(smallestSetSupplier);
     }
 
@@ -105,12 +108,17 @@ public final class Collectors {
      * @param <V>         the type of the values of the MultiKeyMap
      * @return the MultiKeyMap producing collector
      */
-    public static <T, E, K extends Iterable<E>, V> Collector<T, ?, MultiKeyMap<E, K, V>> toMultiKeyMap(
+    public static <T, E, K extends Iterable<E>, V>
+    Collector<T, ?, MultiKeyMap<E, K, V>> toMultiKeyMap(
             final Function<? super T, ? extends K> keyMapper,
             final Function<? super T, ? extends V> valueMapper) {
-        return java.util.stream.Collectors.toMap(keyMapper, valueMapper, (k, v) -> {
-            throw new IllegalStateException(String.format("duplicate key %s", k));
-        }, MultiKeyMaps::<E, K, V>newMultiKeyMap);
+        return java.util.stream.Collectors.toMap(
+                keyMapper,
+                valueMapper,
+                (k, v) -> {
+                    throw new IllegalStateException(String.format("duplicate key %s", k));
+                },
+                MultiKeyMaps::<E, K, V>newMultiKeyMap);
     }
 
     /**
@@ -125,11 +133,13 @@ public final class Collectors {
      * @param <V>           the type of the values of the MultiKeyMap
      * @return the MultiKeyMap producing collector
      */
-    public static <T, E, K extends Iterable<E>, V> Collector<T, ?, MultiKeyMap<E, K, V>> toMultiKeyMap(
+    public static <T, E, K extends Iterable<E>, V>
+    Collector<T, ?, MultiKeyMap<E, K, V>> toMultiKeyMap(
             final Function<? super T, ? extends K> keyMapper,
-            final Function<? super T, ? extends V> valueMapper, final BinaryOperator<V> mergeFunction) {
-        return java.util.stream.Collectors.toMap(keyMapper, valueMapper, mergeFunction,
-                MultiKeyMaps::<E, K, V>newMultiKeyMap);
+            final Function<? super T, ? extends V> valueMapper,
+            final BinaryOperator<V> mergeFunction) {
+        return java.util.stream.Collectors.toMap(
+                keyMapper, valueMapper, mergeFunction, MultiKeyMaps::<E, K, V>newMultiKeyMap);
     }
 
     /**
@@ -145,12 +155,14 @@ public final class Collectors {
      * @param <V>                 the type of the values of the MultiKeyMap
      * @return the MultiKeyMap producing collector
      */
-    public static <T, E, K extends Iterable<E>, V, M extends MultiKeyMap<E, K, V>> Collector<T, ?, M> toMultiKeyMap(
+    public static <T, E, K extends Iterable<E>, V, M extends MultiKeyMap<E, K, V>>
+    Collector<T, ?, M> toMultiKeyMap(
             final Function<? super T, ? extends K> keyMapper,
-            final Function<? super T, ? extends V> valueMapper, final BinaryOperator<V> mergeFunction,
+            final Function<? super T, ? extends V> valueMapper,
+            final BinaryOperator<V> mergeFunction,
             final Supplier<M> multiKeyMapSupplier) {
-        return java.util.stream.Collectors.toMap(keyMapper, valueMapper, mergeFunction,
-                multiKeyMapSupplier);
+        return java.util.stream.Collectors.toMap(
+                keyMapper, valueMapper, mergeFunction, multiKeyMapSupplier);
     }
 
     static final class ConcurrentSetIntersecting<K> implements Collector<Set<K>, Set<K>, Set<K>> {
@@ -182,8 +194,10 @@ public final class Collectors {
 
         @Override
         public BinaryOperator<Set<K>> combiner() {
-            return (set1, set2) -> set1.isEmpty() || set2.isEmpty()
-                    || (set1.retainAll(set2) && set1.isEmpty()) ? Collections.emptySet() : set1;
+            return (set1, set2) ->
+                    set1.isEmpty() || set2.isEmpty() || (set1.retainAll(set2) && set1.isEmpty())
+                            ? Collections.emptySet()
+                            : set1;
         }
 
         @Override
@@ -221,19 +235,21 @@ public final class Collectors {
 
         @Override
         public BinaryOperator<Set<K>> combiner() {
-            return (set1, set2) -> set1.isEmpty() || set2.isEmpty()
-                    || (set1.retainAll(set2) && set1.isEmpty()) ? Collections.emptySet() : set1;
-        }
-
-        @Override
-        public Set<Characteristics> characteristics() {
-            return Collections
-                    .unmodifiableSet(EnumSet.of(Characteristics.IDENTITY_FINISH, Characteristics.UNORDERED));
-        }
-
-        @Override
-        public Function<Set<K>, Set<K>> finisher() {
-            return Function.identity();
-        }
+            return (set1, set2) ->
+                    set1.isEmpty() || set2.isEmpty() || (set1.retainAll(set2) && set1.isEmpty())
+                            ? Collections.emptySet()
+              : set1;
     }
+
+    @Override
+    public Set<Characteristics> characteristics() {
+      return Collections.unmodifiableSet(
+          EnumSet.of(Characteristics.IDENTITY_FINISH, Characteristics.UNORDERED));
+    }
+
+    @Override
+    public Function<Set<K>, Set<K>> finisher() {
+      return Function.identity();
+    }
+  }
 }

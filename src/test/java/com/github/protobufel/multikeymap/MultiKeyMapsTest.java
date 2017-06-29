@@ -53,9 +53,11 @@ public class MultiKeyMapsTest {
 
     @Test
     public void utilityClassTest() throws Exception {
-        softly.assertThat(MultiKeyMaps.class).isFinal().isPublic().satisfies(
-                clazz -> softly.assertThat(clazz.getConstructors()).isEmpty()
-        );
+        softly
+                .assertThat(MultiKeyMaps.class)
+                .isFinal()
+                .isPublic()
+                .satisfies(clazz -> softly.assertThat(clazz.getConstructors()).isEmpty());
     }
 
     @Test
@@ -84,12 +86,18 @@ public class MultiKeyMapsTest {
 
         softly.assertThat(MultiKeyMaps.of(map)).isNotNull().isEqualTo(map).isEqualTo(expected);
 
-        map = new HashMap<Iterable<String>, Integer>() {{
+        map =
+                new HashMap<Iterable<String>, Integer>() {
+                    {
             put(Arrays.asList("1", "2"), 1);
-        }};
-        expected = new HashMap<Iterable<String>, Integer>() {{
+                    }
+                };
+        expected =
+                new HashMap<Iterable<String>, Integer>() {
+                    {
             put(Arrays.asList("1", "2"), 1);
-        }};
+                    }
+                };
 
         softly.assertThat(MultiKeyMaps.of(map)).isNotNull().isEqualTo(map).isEqualTo(expected);
     }
@@ -98,26 +106,24 @@ public class MultiKeyMapsTest {
     public void ofSanityTest() throws Exception {
         new ClassSanityTester()
                 //.setDefault(Map.class, new HashMap<Iterable<String>, Integer>())
-                .setDistinctValues(Map.class,
-                        new HashMap<Iterable<String>, Integer>() {{
-                            put(Arrays.asList("1", "2", "3"), 1);
-                            put(Arrays.asList("1", "2", "3", "4"), 2);
-                        }},
-                        new HashMap<Iterable<String>, Integer>() {{
-                            put(Arrays.asList("2", "3", "4"), 1);
-                            put(Arrays.asList("1", "2", "3"), 2);
-                        }}
-                )
+                .setDistinctValues(
+                        Map.class,
+                        new HashMap<Iterable<String>, Integer>() {
+                            {
+                                put(Arrays.asList("1", "2", "3"), 1);
+                                put(Arrays.asList("1", "2", "3", "4"), 2);
+                            }
+                        },
+                        new HashMap<Iterable<String>, Integer>() {
+                            {
+                                put(Arrays.asList("2", "3", "4"), 1);
+                                put(Arrays.asList("1", "2", "3"), 2);
+                            }
+                        })
                 .forAllPublicStaticMethods(MultiKeyMapFactory.class)
                 .thatReturn(MultiKeyMap.class)
                 //.testNulls()
                 .testEqualsAndSerializable();
-    }
-
-    private static class MultiKeyMapFactory {
-        public static MultiKeyMap<String, Iterable<String>, Integer> of(final Map<Iterable<String>, Integer> map) {
-            return MultiKeyMaps.of(map);
-        }
     }
 
     private <T, K extends Iterable<T>, V> void equalityHelper(
@@ -129,19 +135,25 @@ public class MultiKeyMapsTest {
                 .testEquals();
     }
 
-    private <T, K extends Iterable<T>, V> void miscHelper(
-            MultiKeyMap<T, K, V> empty) {
-        softly.assertThat(empty)
+    private <T, K extends Iterable<T>, V> void miscHelper(MultiKeyMap<T, K, V> empty) {
+        softly
+                .assertThat(empty)
                 .isNotNull()
                 .isInstanceOf(Map.class)
                 .isInstanceOf(MultiKeyMap.class)
                 .hasSize(0);
-
     }
 
     @FunctionalInterface
     public interface MapSupplier<K, V> extends Supplier<Map<K, V>> {
         @Override
         Map<K, V> get();
+    }
+
+    private static class MultiKeyMapFactory {
+        public static MultiKeyMap<String, Iterable<String>, Integer> of(
+                final Map<Iterable<String>, Integer> map) {
+            return MultiKeyMaps.of(map);
+        }
     }
 }

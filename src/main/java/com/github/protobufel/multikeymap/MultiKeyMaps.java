@@ -31,12 +31,14 @@ public final class MultiKeyMaps {
     }
 
     /**
-     * Creates a new MultiKeyMap based on the provided map supplier.
-     * The returned MultiKeyMap is Serializable if the provided map is Serializable.
+     * Creates a new MultiKeyMap based on the provided map supplier. The returned MultiKeyMap is
+     * Serializable if the provided map is Serializable.
+     * <p>
      * <p>NOTE: Use with caution. This is the advanced functionality.
      *
      * @param mapSupplier a supplier of {@code Map<K, V>} this MultiKeyMap is based on
-     * @param concurrent  create a concurrent instance if true, un-synchronized, regular instance, otherwise
+     * @param concurrent  create a concurrent instance if true, un-synchronized, regular instance,
+     *                    otherwise
      * @param <T>         the type of a sub-key the key consist of
      * @param <K>         the type of a full key, which is an Iterable of its sub-keys, with usage as in a
      *                    regular Map
@@ -45,8 +47,8 @@ public final class MultiKeyMaps {
      */
     public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> newMultiKeyMap(
             final Supplier<Map<K, V>> mapSupplier, boolean concurrent) {
-        return new BaseMultiKeyMap(Objects.requireNonNull(mapSupplier).get(),
-                LiteSetMultimap.newInstance(concurrent));
+        return new BaseMultiKeyMap(
+                Objects.requireNonNull(mapSupplier).get(), LiteSetMultimap.newInstance(concurrent));
     }
 
     /**
@@ -63,7 +65,8 @@ public final class MultiKeyMaps {
     }
 
     /**
-     * Creates a new default, Serialiazable instance of MultiKeyMap initialized off the data by the supplied Map.
+     * Creates a new default, Serialiazable instance of MultiKeyMap initialized off the data by the
+     * supplied Map.
      *
      * @param map a Map instance to copy data from; the data copied shallowly.
      * @param <T> the type of a sub-key the key consist of
@@ -74,6 +77,6 @@ public final class MultiKeyMaps {
      * data
      */
     public static <T, K extends Iterable<T>, V> MultiKeyMap<T, K, V> of(final Map<K, V> map) {
-        return new BaseMultiKeyMap<>(Objects.requireNonNull(map));
-    }
+    return new BaseMultiKeyMap<>(Objects.requireNonNull(map));
+  }
 }
