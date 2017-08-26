@@ -13,7 +13,7 @@ any-position-sub-keys and positional sub-keys, as in the following example:
     MultiKeyMap<String, Iterable<String>, String> map = MultiKeyMaps.newMultiKeyMap();
 
     // add a record
-    map.put(Arrays.asList("Hello", ",", "wonderful", "world"), "You found me!");
+    map.put(Arrays.asList("Hello", ",", "the", "wonderful", "world"), "You found me!");
 
     // or copy some data from the compatible Map
     Map<Iterable<String>, String> dict = new HashMap<>();
